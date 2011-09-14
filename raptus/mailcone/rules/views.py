@@ -16,6 +16,8 @@ from raptus.mailcone.rules import contents
 
 grok.templatedir('templates')
 
+""" Note: all WireIt stuff and view are located in raptus.mailcone.rules.wireit
+"""
 
 
 class RulesetsTable(BaseDataTable):
@@ -23,10 +25,13 @@ class RulesetsTable(BaseDataTable):
     interface_fields = interfaces.IRuleset
     ignors_fields = ['id']
     actions = (dict( title = _('delete'),
-                     cssclass = 'ui-icon ui-icon-trash ui-modal-minsize',
+                     cssclass = 'ui-icon ui-icon-trash ui-modal-minsize ui-datatable-ajaxlink',
                      link = 'deleterulesetform'),
+               dict( title = _('open'),
+                     cssclass = 'ui-icon ui-icon-arrow-4-diag',
+                     link = 'wireitboard'),
                dict( title = _('edit'),
-                     cssclass = 'ui-icon ui-icon-pencil',
+                     cssclass = 'ui-icon ui-icon-pencil ui-datatable-ajaxlink',
                      link = 'editrulesetform'),)
 
 class Rulesets(Page):

@@ -1,0 +1,92 @@
+#wireit-workspace {
+  width: 1000px;
+  height: 800px;
+  background:url("graphpaper.jpg") repeat scroll left top #ffffff;
+  border: 1px solid #c8cccd;
+}
+
+.wireit-rulebox {
+  border: solid 1px #c8cccd;
+  min-height: 150px;
+  min-width: 180px;
+  position: absolute;
+  padding:0;
+  background-color: #ffffff;
+}
+
+.wireit-rulebox li {
+  display: inline-block;
+  padding: 3px 10px;
+  border-right:  1px solid #c8cccd;
+}
+
+.wireit-rulebox li:first-child {
+  border-left:  1px solid #c8cccd;
+}
+
+.wireit-rulebox ul{
+  text-align: center;
+}
+
+.wireit-rulebox .boxtop{
+  margin-bottom: 3px;
+}
+
+.wireit-rulebox .boxbottom{
+  position: absolute;
+  bottom:0;
+  width: 100%;
+}
+
+.wireit-rulebox .boxtop li{
+  padding-bottom: 10px;
+  border-bottom: 1px solid #c8cccd;
+}
+
+.wireit-rulebox .boxbottom li{
+  padding-top: 10px;
+  border-top: 1px solid #c8cccd;
+}
+  
+.wireit-rulebox-control{
+  text-align: right;
+  height: 34px;
+  padding:5px;
+}
+
+
+.wireit-rulebox.skeleton {
+  border: dotted 1px #888c8d;
+  background-color: transparent;
+}
+
+.wireit-rulebox.skeleton>* {
+  visibility: hidden!important;
+}
+
+#wireit-rulebox-template {
+  display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
