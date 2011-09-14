@@ -1,0 +1,72 @@
+<html tal:omit-tag=""
+      i18n:domain="raptus.mailcone.rules">
+    <div id="wireit-toolbox">
+        <h1 i18n:translate="">Toolbox</h1>
+        
+        <div class="wireit-ruleitem">
+            <tal:block tal:repeat="accordion view.toolbox">
+                <p class="discreet"
+                   tal:content="accordion.get('title')"
+                   tal:condition="accordion.get('items')">Condtions</p>
+                <div class="ui-accordion">
+                    <tal:block tal:repeat="rule_tuple accordion.get('items')">
+                        <tal:define tal:define="rule rule_tuple[1]">
+                            <h3>
+                                <a href="#">
+                                <span tal:content="rule.title">
+                                    Input
+                                </span>
+                                <button class="ui-button"
+                                        data-ui-icon="ui-icon-arrow-4"
+                                        href="#"
+                                        i18n:translate="">
+                                            Drag and Drop it to workspace!
+                                </button>
+                                </a>
+                            </h3>
+                            <div>
+                                <p  tal:content="rule.description">
+                                    All mails came in through the Input Element
+                                </p>
+                            </div>
+                        </tal:define>
+                    </tal:block>
+                </div>
+            </tal:block>
+        </div>
+        
+        <form method="post">
+        <div id="actionsView">
+          <span class="actionButtons button-group">
+            <input type="submit"
+                   id="wireit-save"
+                   name="wireit-save" 
+                   value="Save Workspace"
+                   i18n:attributes="value"
+                   class="button" />
+          </span>
+        </div>
+        </form>
+    </div>
+    
+    <div id="wireit-workspace" class="ui-corner-all">
+        <tal:comment tal:condition="nothing">
+            template box used by jquery
+        </tal:comment>
+        <div id="wireit-rulebox-template">
+            <div class="wireit-rulebox ui-corner-all ui-dialog skeleton">
+                <ul class="boxtop"><li>blup</li></ul>
+                <div class="boxtitle ui-dialog-titlebar ui-widget-header ui-helper-clearfix">lorem ipsum</div>
+                <div class="wireit-rulebox-control">
+                   <button class="ui-button"
+                            data-ui-icon="ui-icon-trash"
+                            href="#" />
+                   <button class="ui-button"
+                            data-ui-icon="ui-icon-pencil"
+                            href="#" />
+                </div>
+                <ul class="boxbottom"><li>blup1</li><li>blup2</li><li>blup3</li></ul>
+            </div>
+        </div>
+    </div>
+</html>

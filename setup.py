@@ -25,9 +25,12 @@ setup(name='raptus.mailcone.rules',
       install_requires=[
           # -*- Extra requirements: -*-
           'setuptools',
+          'fanstatic',
+          'js.yui_wireit',
 
       ],
-      entry_points="""
-      # -*- Entry points: -*-
-      """,
-      )
+      entry_points={
+          'fanstatic.libraries': [
+              'raptus.mailcone.rules = raptus.mailcone.rules.resource:library',
+          ]
+      })
