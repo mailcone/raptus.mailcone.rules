@@ -8,7 +8,8 @@
                 <p class="discreet"
                    tal:content="accordion.get('title')"
                    tal:condition="accordion.get('items')">Condtions</p>
-                <div class="ui-accordion">
+                <div class="ui-accordion"
+                     tal:attributes="data-accordion-options view.toolboxconfig">
                     <tal:block tal:repeat="rule_tuple accordion.get('items')">
                         <tal:define tal:define="rule rule_tuple[1]">
                             <h3>
@@ -19,14 +20,15 @@
                                 <button class="ui-button"
                                         data-ui-icon="ui-icon-arrow-4"
                                         href="#"
-                                        i18n:translate="">
+                                        i18n:translate=""
+                                        tal:attributes="data-metadata rule.metadata">
                                             Drag and Drop it to workspace!
                                 </button>
                                 </a>
                             </h3>
                             <div>
-                                <p  tal:content="rule.description">
-                                    All mails came in through the Input Element
+                                <p tal:content="rule.description">
+                                    All mails came through the Input Element
                                 </p>
                             </div>
                         </tal:define>
@@ -53,20 +55,12 @@
         <tal:comment tal:condition="nothing">
             template box used by jquery
         </tal:comment>
-        <div id="wireit-rulebox-template">
-            <div class="wireit-rulebox ui-corner-all ui-dialog skeleton">
-                <ul class="boxtop"><li>blup</li></ul>
-                <div class="boxtitle ui-dialog-titlebar ui-widget-header ui-helper-clearfix">lorem ipsum</div>
-                <div class="wireit-rulebox-control">
-                   <button class="ui-button"
-                            data-ui-icon="ui-icon-trash"
-                            href="#" />
-                   <button class="ui-button"
-                            data-ui-icon="ui-icon-pencil"
-                            href="#" />
-                </div>
-                <ul class="boxbottom"><li>blup1</li><li>blup2</li><li>blup3</li></ul>
-            </div>
+        <div id="wireit-rulebox-template" class="wireit-rulebox ui-corner-all ui-dialog skeleton">
+            <ul class="boxtop"></ul>
+            <div class="boxtitle ui-dialog-titlebar ui-widget-header ui-helper-clearfix">lorem ipsum</div>
+            <p class="boxdescription"></p>
+            <div class="wireit-rulebox-control"></div>
+            <ul class="boxbottom"></ul>
         </div>
     </div>
 </html>
