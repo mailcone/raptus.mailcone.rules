@@ -110,7 +110,9 @@ canvas.WireIt-Wire {
   margin-left: -2px;
 }
 
-
+#wireit-toolbox .wireit-ruleitem>p {
+  margin-top: 20px;
+}
 
 
 

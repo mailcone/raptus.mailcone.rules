@@ -49,17 +49,17 @@ class IRuleItemFactory(interface.Interface):
 
 
     
-class IInputItemFactory(IRuleItem):
+class IInputItemFactory(IRuleItemFactory):
     """ special adapter to build the first node element in flowchart
     """
 
 
-class IConditionItemFactory(IRuleItem):
+class IConditionItemFactory(IRuleItemFactory):
     """ adapter to build a IConditionItem
     """
 
 
-class IActionItemFactory(IRuleItem):
+class IActionItemFactory(IRuleItemFactory):
     """ adapter to build a IActionItem
     """
 

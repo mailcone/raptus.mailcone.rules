@@ -22,7 +22,8 @@ class BaseFactory(grok.Adapter):
         di = dict(input=self.box_input(),
              output=self.box_output(),
              title = self.box_title(),
-             buttons = self.box_buttons())
+             buttons = self.box_buttons(),
+             identifer=self.identifier())
         return json.dumps(di)
 
     def box_title(self):
@@ -34,16 +35,22 @@ class BaseFactory(grok.Adapter):
     def box_output(self):
         return list()
     
-    def box_buttons(self):
-        li = list()
-        li.append(dict(icon='ui-icon-trash',
-                       title=self._translate(_('delete rule element')),
-                       cssclass='ui-button ui-modal-minsize',
-                       ajax=self.box_delete()))
-        li.append(dict(icon='ui-icon-pencil',
+    def box_buttons_save(self):
+        return dict(   icon='ui-icon-pencil',
                        title=self._translate(_('edit rule element')),
                        cssclass='ui-button',
-                       ajax=self.box_edit()))
+                       ajax=self.box_edit())
+    
+    def box_buttons_delete(self):
+        return dict(   icon='ui-icon-trash',
+                       title=self._translate(_('delete rule element')),
+                       cssclass='ui-button ui-modal-minsize',
+                       ajax=self.box_delete())
+    
+    def box_buttons(self):
+        li = list()
+        li.append(self.box_buttons_delete())
+        li.append(self.box_buttons_save())
         return li
     
     def box_delete(self):
@@ -51,6 +58,13 @@ class BaseFactory(grok.Adapter):
 
     def box_edit(self):
         return '%s/wireit_edit' % grok.url(utils.getRequest(), self.context)
+
+    def identifier(self):
+        return dict(name=getattr(self,'grokcore.component.directive.name'),
+                    implements=[dict(module=i.__module__, interface=i.__name__) for i in self.__implemented__.interfaces()])
+    
+    def implements(self):
+        [i for i in self.__implemented__.interfaces()]
 
     def _translate(self, msg):
         return translate(msg, context=utils.getRequest())
@@ -63,6 +77,11 @@ class InputFactory(BaseFactory):
     
     title = _('Input')
     description = _('All mails came through the Input Element')
+
+    def box_buttons(self):
+        li = list()
+        li.append(self.box_buttons_delete())
+        return li
 
     def box_output(self):
         li = list()
@@ -77,6 +96,11 @@ class InputCustomerFactory(BaseFactory):
     
     title = _('Input Customer')
     description = _('All mails for each customer came in through the Input Element')
+
+    def box_buttons(self):
+        li = list()
+        li.append(self.box_buttons_delete())
+        return li
 
     def box_output(self):
         li = list()

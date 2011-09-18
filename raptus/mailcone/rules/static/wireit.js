@@ -68,6 +68,10 @@ wireit = {
     _form_controls_delete: function(){
         var dialog = $('#ui-modal-content');
         var box = $(wireit.lastbuttonevent.target).parents('.wireit-rulebox');
+        $.each(box.data('terminals'),function(index,term){
+            term.removeAllWires();
+        });
+        
         box.remove();
         dialog.dialog('close');
     },
@@ -89,7 +93,7 @@ wireit = {
     },
     
     
-    init_rulebox: function(box, data){console.log(data );
+    init_rulebox: function(box, data){
         box.find('.boxtitle').html(data.title);
         $.each(data.input, function(index, term){
             box.find('.boxtop').append('<li>'+term.title+'</li>');
@@ -98,12 +102,13 @@ wireit = {
             box.find('.boxbottom').append('<li>'+term.title+'</li>');
         });
         $.each(data.buttons, function(index, button){
+            $(this).data('postdata', data.identifer);
             box.find('.wireit-rulebox-control').append('<button class="'+button.cssclass+'"'+
                                                        'data-ui-icon="'+button.icon+'"'+
                                                        'href="'+button.ajax+'">'+button.title+'</button>');
             box.find('.wireit-rulebox-control>button:last').click(function(event){
                 wireit.lastbuttonevent = event;
-                ui_elements._ajax_modal(button.ajax, $(this));
+                ui_elements._ajax_modal(button.ajax, $(this), {identifer:JSON.stringify(data.identifer)});
             });
         });
         box.data('metadata', data);
@@ -132,14 +137,17 @@ wireit = {
         var block = YAHOO.util.Dom.get(boxid);
         var terminals = [];
         $.each(data.input, function(index, term){
-            var x = box.position().left + box.width()/2 - 15; // terminal width correction
-            terminals.push(new WireIt.Terminal(block, {direction: [-1,0], offsetPosition: [x,-1]}));
+            var li = $(box.find('.boxtop li')[index]);
+            var x = li.position().left + li.width()/2 - 3; // terminal width correction
+            terminals.push(new WireIt.util.TerminalInput(block, {direction: [-1,-1], offsetPosition: [x,-22]}));
         });
         $.each(data.output, function(index, term){
             var y = box.height() - 7; // terminal width correction
-            var x = box.position().left + box.width()/2 - 15; // terminal width correction
-            terminals.push(new WireIt.Terminal(block, {direction: [-1,0], offsetPosition: [x,y]}));
+            var li = $(box.find('.boxbottom li')[index]);
+            var x = li.position().left + li.width()/2 - 3; // terminal width correction
+            terminals.push(new WireIt.util.TerminalOutput(block, {direction: [1,1], offsetPosition: [x,y]}));
         });
+        box.data('terminals', terminals);
         
         new WireIt.util.DD(terminals, block);
     },
