@@ -1,5 +1,8 @@
+import os
 import json
 import grok
+
+from grokcore.view.interfaces import ITemplateFileFactory
 
 from zope import component
 
@@ -10,6 +13,7 @@ from raptus.mailcone.rules import resource
 from raptus.mailcone.layout.views import Page, DeleteForm, AddForm
 
 grok.templatedir('templates')
+
 
 
 class WireItBoard(Page):
@@ -61,6 +65,7 @@ class IdentifierMixing(object):
                 break
         return component.queryAdapter(self.context, interface, name=name)
 
+
 class BaseDeleteForm(DeleteForm, IdentifierMixing):
     grok.name('wireit_delete')
     grok.context(interfaces.IRuleset)
@@ -87,9 +92,52 @@ class BaseEditForm(AddForm, IdentifierMixing):
     grok.name('wireit_edit')
     grok.context(interfaces.IRuleset)
     
+    
     def __call__(self):
+        self.form_template = self.template
+        filepath = os.path.join(os.path.dirname(__file__),'templates','edit_form_wireit.cpt')
+        self.template = component.getUtility(ITemplateFileFactory, name='cpt')(filename=filepath)
         self.factory = self.identifer()
         return super(BaseEditForm, self).__call__()
+    
+    @property
+    def form_fields(self):
+        return self.factory.form_fields
+    
+    def formhtml(self):
+        return self.form_template.render(self)
+    
+    def overridehtml(self):
+        filepath = os.path.join(os.path.dirname(__file__),'templates','override_form_wireit.cpt')
+        return component.getUtility(ITemplateFileFactory, name='cpt')(filename=filepath).render(self)
+
+    @property
+    def overrides(self):
+        return self.factory.override_properties()
+
+    def verifyhtml(self):
+        filepath = os.path.join(os.path.dirname(__file__),'templates','verify_form_wireit.cpt')
+        return component.getUtility(ITemplateFileFactory, name='cpt')(filename=filepath).render(self)
+    
+    def infohtml(self):
+        return '<p>%s</p>' % self.factory.description
+    
+    @property
+    def tabs(self, ignors=[]):
+        li = list()
+        li.append(dict(id='ui-tabs-form',
+                       title=_('Properties'),
+                       html=self.formhtml()))
+        li.append(dict(id='ui-tabs-overrides',
+                       title=_('Override'),
+                       html=self.overridehtml()))
+        li.append(dict(id='ui-tabs-verify',
+                       title=_('Test'),
+                       html=self.verifyhtml()))
+        li.append(dict(id='ui-tabs-info',
+                       title=_('Info'),
+                       html=self.infohtml()))
+        return [i for i in li if not  i.get('id') in ignors]
     
     def item_title(self):
         return self.factory.box_title()
@@ -104,5 +152,5 @@ class BaseEditForm(AddForm, IdentifierMixing):
         """ we use only the button, the rest we do it with javascript
         """
 
-
+    
         

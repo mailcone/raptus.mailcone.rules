@@ -58,8 +58,8 @@
         <div id="wireit-rulebox-template" class="wireit-rulebox ui-corner-all ui-dialog skeleton">
             <ul class="boxtop"></ul>
             <div class="boxtitle ui-dialog-titlebar ui-widget-header ui-helper-clearfix">lorem ipsum</div>
-            <p class="boxdescription"></p>
             <div class="wireit-rulebox-control"></div>
+            <p class="boxdescription"></p>
             <ul class="boxbottom"></ul>
         </div>
     </div>

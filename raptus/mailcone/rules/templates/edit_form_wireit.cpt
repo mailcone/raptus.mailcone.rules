@@ -1,0 +1,14 @@
+<div class="ui-tabs">
+    <ul>
+        <li tal:repeat="tab view.tabs">
+            <a tal:content="tab.get('title')"
+               tal:attributes="href '#%s' % tab.get('id')">Nunc tincidunt</a>
+        </li>
+    </ul>
+    <div tal:repeat="tab view.tabs"
+         tal:attributes="id tab.get('id')">
+        <p tal:replace="structure tab.get('html')">
+            Proin elit arcu, rutrum commodo, vehicula tempus, commodo a, risus. Curabitur nec arcu.
+        </p>
+    </div>
+</div>

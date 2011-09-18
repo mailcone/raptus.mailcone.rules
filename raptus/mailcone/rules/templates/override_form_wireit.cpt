@@ -1,0 +1,28 @@
+<div class="override_properties">
+    
+    <p i18n:translate="">
+        Each attribute can be overrided by settings of customer.
+    </p>
+    
+    <ul>
+        <li class="form.title"
+            tal:repeat="field view.overrides">
+            <label tal:attributes="for 'override.form.%s' % field.field.getName()">
+              <span tal:content="field.field.title">
+                  Title
+              </span>
+            </label>
+            <div class="widget">
+                <input type="checkbox"
+                       value=""
+                       name="override.form.title"
+                       id="override.form.title"
+                       tal:attributes="name 'override.form.%s' % field.field.getName();
+                                      id 'override.form.%s' % field.field.getName()"
+                       class="checkboxType"/>
+            </div>
+        </li>
+    </ul>
+    
+    
+</div>

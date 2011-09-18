@@ -61,7 +61,21 @@ wireit = {
     
     
     submit_workspace: function(){
+        var di = {ruleitems:[]};
+        $('.wireit-rulebox:not(#wireit-rulebox-template)').each(function(){
+            wireit.data_crapper($(this));
+            di.ruleitems.push($(this).data('metadata'));
+        });
+        console.log(di);
+    },
+    
+    
+    data_crapper: function(box){
+        var data = box.data('metadata');
+        data['id'] = box.attr('id');
+        data['position'] = box.position();
         
+        box.data('metadata', data);
     },
     
     
@@ -80,6 +94,19 @@ wireit = {
     _form_controls_save: function(){
         var dialog = $('#ui-modal-content');
         var box = $(wireit.lastbuttonevent.target).parents('.wireit-rulebox');
+        var data = box.data('metadata');
+        var di = {};
+        dialog.find('input, textarea, select').val(function(index, value){
+            if ($(this).is(':checkbox')){
+                //special case for ckeckboxes, maybe we need some more..
+                di[$(this).attr('name')] = $(this).is(':checked');
+                return;
+            }
+            di[$(this).attr('name')] = value;
+        });
+        data['properties'] = di;
+        box.data('metadata', data);
+        wireit.update_rulebox(box);
         dialog.dialog('close');
     },
 
@@ -108,12 +135,38 @@ wireit = {
                                                        'href="'+button.ajax+'">'+button.title+'</button>');
             box.find('.wireit-rulebox-control>button:last').click(function(event){
                 wireit.lastbuttonevent = event;
-                ui_elements._ajax_modal(button.ajax, $(this), {identifer:JSON.stringify(data.identifer)});
+                var callback = function(dialog){
+                    wireit.rulebox_fill_data(box, dialog);
+                }
+                ui_elements._ajax_modal(button.ajax, $(this), {identifer:JSON.stringify(data.identifer)}, callback);
             });
         });
         box.data('metadata', data);
         ui_elements.init(box);
         wireit.yui_boxinit(box);
+    },
+    
+    
+    update_rulebox: function(box){
+        var data = box.data('metadata');
+        box.find('.boxtitle').html(data.properties['form.title']+' <em>('+data.title+')</em>');
+        box.find('.boxdescription').html(data.properties['form.description']);
+    },
+    
+    
+    rulebox_fill_data: function(box, dialog){
+        var data = box.data('metadata');
+        var prop = data.properties?data.properties:{};
+        dialog.find('input, select, textarea').each(function(){
+            var name = $(this).attr('name');
+            if (name in prop){
+                if ($(this).is(':checkbox')){
+                    $(this).attr('checked', prop[name]);
+                    return;
+                }
+                $(this).val(prop[name]);
+            }
+        });
     },
     
     

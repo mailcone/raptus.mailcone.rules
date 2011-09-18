@@ -15,6 +15,8 @@ class BaseFactory(grok.Adapter):
     grok.context(interfaces.IRuleset)
 
     order = 0
+    form_fields = []
+    override_properties_ignors = ['title', 'description']
 
         
     @property
@@ -65,6 +67,11 @@ class BaseFactory(grok.Adapter):
     
     def implements(self):
         [i for i in self.__implemented__.interfaces()]
+
+
+    def override_properties(self):
+        return [i for i in self.form_fields if i.field.getName() not in self.override_properties_ignors]
+
 
     def _translate(self, msg):
         return translate(msg, context=utils.getRequest())

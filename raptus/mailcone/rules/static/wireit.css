@@ -49,11 +49,16 @@
   padding-top: 10px;
   border-top: 1px solid #c8cccd;
 }
-  
+
+.wireit-rulebox .boxdescription{
+  margin-bottom: 30px;
+  padding: 5px 15px;
+}
+
 .wireit-rulebox-control{
-  text-align: right;
   height: 34px;
   padding:5px;
+  float: right;
 }
 
 

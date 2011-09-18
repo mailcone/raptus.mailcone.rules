@@ -32,21 +32,31 @@ class IRuleItem(interface.Interface):
 class IConditionItem(IRuleItem):
     """ check if a mail match and pass to next condition or action.
     """
+    title = schema.TextLine(title=_('Title'), required=True, description=_('title of the condition rule'),)
+    description = schema.Text(title=u'Description', required=False, description=_('description of the condition rule'),)
+                             
 
 
 class IActionItem(IRuleItem):
     """ end node of the flowchart and done some action.
     """
-
+    title = schema.TextLine(title=_(u'Title'), required=True, description=_('title of the action item'),)
+    description = schema.Text(title=u'Description', required=False, description=_('description of the action item'),)
+    
 
 class IRuleItemFactory(interface.Interface):
     """ Base interface
     """
     
-    order = interface.Attribute("int: order of the rule item")
-    title = interface.Attribute("title of factory")
-    description = interface.Attribute("factory description")
-
+    order = interface.Attribute('int: order of the rule item')
+    form_fields = interface.Attribute('interface for properties form')
+    title = interface.Attribute('title of factory')
+    description = interface.Attribute('factory description')
+    metadata = interface.Attribute('return a json string with all required data for js')
+    
+    def override_properties(self):
+        """ return all fields that can be overrided by a customer
+        """
 
     
 class IInputItemFactory(IRuleItemFactory):
