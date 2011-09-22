@@ -27,11 +27,20 @@ class IRuleset(interface.Interface):
 class IRuleItem(interface.Interface):
     """ Base interface
     """
+    
+    position = interface.Attribute('per. dict where the position are stored (required for js)')
+    overrides = interface.Attribute('per. dict attribute:boolean store all attributes where can be override by a customer')
+    indentifer = interface.Attribute('per. dict store the used factory for this element')
 
+
+class IInputItem(IRuleItem):
+    """ first node element in flowchart
+    """
 
 class IConditionItem(IRuleItem):
     """ check if a mail match and pass to next condition or action.
     """
+    
     title = schema.TextLine(title=_('Title'), required=True, description=_('title of the condition rule'),)
     description = schema.Text(title=u'Description', required=False, description=_('description of the condition rule'),)
                              
@@ -40,6 +49,7 @@ class IConditionItem(IRuleItem):
 class IActionItem(IRuleItem):
     """ end node of the flowchart and done some action.
     """
+    
     title = schema.TextLine(title=_(u'Title'), required=True, description=_('title of the action item'),)
     description = schema.Text(title=u'Description', required=False, description=_('description of the action item'),)
     
@@ -52,12 +62,19 @@ class IRuleItemFactory(interface.Interface):
     form_fields = interface.Attribute('interface for properties form')
     title = interface.Attribute('title of factory')
     description = interface.Attribute('factory description')
-    metadata = interface.Attribute('return a json string with all required data for js')
+    metadata_json = interface.Attribute('return a json string with all required data for js')
+    
+    def metadata(self):
+        """ return a dict with all information over the instance for js.
+        """
     
     def override_properties(self):
         """ return all fields that can be overrided by a customer
         """
 
+    def create(self):
+        """ create and return a new RuleItem
+        """
     
 class IInputItemFactory(IRuleItemFactory):
     """ special adapter to build the first node element in flowchart

@@ -3,6 +3,7 @@ wireit = {
         wireit._form_controls_mapping();
         wireit.toolbox();
         wireit.toolbox_button();
+        wireit.load_workspace();
     },
 
 
@@ -27,7 +28,7 @@ wireit = {
         $('#wireit-workspace').droppable({ accept: '.wireit-rulebox' });
         $('.wireit-ruleitem button').each(function(){
             $(this).mousedown(function(event){
-                box = wireit.build_rulebox(this);
+                box = wireit.build_rulebox();
                 wireit.init_rulebox(box, $(event.originalEvent.target).parents('a').find('button').data('metadata'));
                 var left = event.pageX - box.parent().offset().left;
                 var top = event.pageY -box.parent().offset().top;
@@ -56,7 +57,8 @@ wireit = {
         if (!ui_elements.form_controls_mapping)
             ui_elements.form_controls_mapping = {};
         ui_elements.form_controls_mapping['form.actions.wireit_delete'] = wireit._form_controls_delete;
-        ui_elements.form_controls_mapping['form.actions.wireit_save'] = wireit._form_controls_save;
+        ui_elements.form_controls_mapping['properties.actions.wireit_save'] = wireit._form_controls_save;
+        ui_elements.form_controls_mapping['properties.actions.cancel']= ui_elements._form_controls_cancel;
     },
     
     
@@ -66,16 +68,31 @@ wireit = {
             wireit.data_crapper($(this));
             di.ruleitems.push($(this).data('metadata'));
         });
-        console.log(di);
+        var form = $('body').append('<form method="post">'+
+                     '<input type="hidden" name="metadata" value=""/>'+
+                     '</form>').find('form:last');console.log(di);
+        form.find('input').val(JSON.stringify(di));
+        form.submit();
     },
     
     
-    data_crapper: function(box){
+    load_workspace:function(){
+      var data = $('#wireit-workspace').data('json_data');
+      $.each(data.ruleitems, function(index, item){
+          var box = wireit.build_rulebox(item.id);
+          wireit.init_rulebox(box, item);
+          wireit.update_rulebox(box);
+          box.removeClass('skeleton');
+      });
+    },
+    
+    
+    data_crapper: function(box){console.log(box);
         var data = box.data('metadata');
         data['id'] = box.attr('id');
         data['position'] = box.position();
         
-        box.data('metadata', data);
+        box.data('metadata', data);console.log(box.data('metadata'));console.log(data);
     },
     
     
@@ -111,16 +128,20 @@ wireit = {
     },
 
 
-    build_rulebox: function(){
+    build_rulebox: function(uid){console.log(uid);
         var clone = $('#wireit-rulebox-template').clone();
-        var id = wireit.uid();
-        clone.attr('id', id);
+        if (!uid)
+            var uid = wireit.uid();
+        clone.attr('id', uid);
         $('#wireit-workspace').append(clone);
         return clone;
     },
     
     
     init_rulebox: function(box, data){
+        if (data.position)
+            box.css('top', data.position.top).css('left', data.position.left);
+            
         box.find('.boxtitle').html(data.title);
         $.each(data.input, function(index, term){
             box.find('.boxtop').append('<li>'+term.title+'</li>');
@@ -149,8 +170,8 @@ wireit = {
     
     update_rulebox: function(box){
         var data = box.data('metadata');
-        box.find('.boxtitle').html(data.properties['form.title']+' <em>('+data.title+')</em>');
-        box.find('.boxdescription').html(data.properties['form.description']);
+        box.find('.boxtitle').html(data.properties['properties.title']+' <em>('+data.title+')</em>');
+        box.find('.boxdescription').html(data.properties['properties.description']);
     },
     
     

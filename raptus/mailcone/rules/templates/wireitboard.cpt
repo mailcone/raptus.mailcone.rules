@@ -21,7 +21,7 @@
                                         data-ui-icon="ui-icon-arrow-4"
                                         href="#"
                                         i18n:translate=""
-                                        tal:attributes="data-metadata rule.metadata">
+                                        tal:attributes="data-metadata rule.metadata_json">
                                             Drag and Drop it to workspace!
                                 </button>
                                 </a>
@@ -51,7 +51,9 @@
         </form>
     </div>
     
-    <div id="wireit-workspace" class="ui-corner-all">
+    <div id="wireit-workspace"
+         class="ui-corner-all"
+         tal:attributes="data-json_data view.json_data">
         <tal:comment tal:condition="nothing">
             template box used by jquery
         </tal:comment>

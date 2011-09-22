@@ -7,6 +7,7 @@ from raptus.mailcone.core import utils
 
 from raptus.mailcone.rules import _
 from raptus.mailcone.rules import interfaces
+from raptus.mailcone.rules import contents
 
 
 
@@ -17,16 +18,23 @@ class BaseFactory(grok.Adapter):
     order = 0
     form_fields = []
     override_properties_ignors = ['title', 'description']
+    ruleitem_class = None
 
-        
     @property
+    def metadata_json(self):
+        return json.dumps(self.metadata())
+        
     def metadata(self):
         di = dict(input=self.box_input(),
              output=self.box_output(),
              title = self.box_title(),
              buttons = self.box_buttons(),
-             identifer=self.identifier())
-        return json.dumps(di)
+             identifer=self.identifier(),
+             properties=self.properties())
+        return di
+
+    def create(self):
+        return self.ruleitem_class()
 
     def box_title(self):
         return self._translate(self.title)
@@ -72,6 +80,8 @@ class BaseFactory(grok.Adapter):
     def override_properties(self):
         return [i for i in self.form_fields if i.field.getName() not in self.override_properties_ignors]
 
+    def properties(self):
+        return dict()
 
     def _translate(self, msg):
         return translate(msg, context=utils.getRequest())
@@ -84,6 +94,8 @@ class InputFactory(BaseFactory):
     
     title = _('Input')
     description = _('All mails came through the Input Element')
+    ruleitem_class = contents.InputItem
+
 
     def box_buttons(self):
         li = list()
@@ -103,6 +115,8 @@ class InputCustomerFactory(BaseFactory):
     
     title = _('Input Customer')
     description = _('All mails for each customer came in through the Input Element')
+    ruleitem_class = contents.InputCustomerItem
+
 
     def box_buttons(self):
         li = list()

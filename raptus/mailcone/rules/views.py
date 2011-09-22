@@ -29,7 +29,7 @@ class RulesetsTable(BaseDataTable):
                      link = 'deleterulesetform'),
                dict( title = _('open'),
                      cssclass = 'ui-icon ui-icon-arrow-4-diag',
-                     link = 'wireitboard'),
+                     link = 'ruleboard'),
                dict( title = _('edit'),
                      cssclass = 'ui-icon ui-icon-pencil ui-datatable-ajaxlink',
                      link = 'editrulesetform'),)

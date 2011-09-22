@@ -5,9 +5,9 @@
     </p>
     
     <ul>
-        <li class="form.title"
+        <li tal:attributes="class '%s.title' % view.override_prefix"
             tal:repeat="field view.overrides">
-            <label tal:attributes="for 'override.form.%s' % field.field.getName()">
+            <label tal:attributes="for '%s.%s' % (view.override_prefix, field.field.getName())">
               <span tal:content="field.field.title">
                   Title
               </span>
@@ -15,10 +15,8 @@
             <div class="widget">
                 <input type="checkbox"
                        value=""
-                       name="override.form.title"
-                       id="override.form.title"
-                       tal:attributes="name 'override.form.%s' % field.field.getName();
-                                      id 'override.form.%s' % field.field.getName()"
+                       tal:attributes="name '%s.%s' % (view.override_prefix, field.field.getName());
+                                      id '%s.%s' % (view.override_prefix, field.field.getName())"
                        class="checkboxType"/>
             </div>
         </li>
