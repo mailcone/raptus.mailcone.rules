@@ -68,7 +68,8 @@ class WireItBoard(Page, IdentifierMixing):
         
         #deleted no more existing object
         ids = [i.get('id') for i in ruleitems]
-        for obj in self.context.objects():
+        # object must be save in a list before iteration and deletion of objects
+        for obj in [i for i in self.context.objects()]:
             if not obj.id in ids:
                 self.context.del_object(obj.id)
         
@@ -79,6 +80,11 @@ class WireItBoard(Page, IdentifierMixing):
             obj.position = PersistentDict(item.get('position'))
             obj.identifer = PersistentDict(item.get('identifer'))
             obj.apply_data(item.get('properties'), factory)
+            
+        #update relations
+        relations = data.get('relations')
+        self.context.relations.set_data(relations)
+        
 
     @property
     def json_data(self):
@@ -88,6 +94,7 @@ class WireItBoard(Page, IdentifierMixing):
             factory = self.identifer(obj.identifer)
             ruleitems.append(obj.json_data(factory))
         results['ruleitems'] = ruleitems
+        results['relations'] = self.context.relations.get_data()
         return json.dumps(results)
     
     def update(self):

@@ -12,6 +12,7 @@ from persistent.dict import PersistentDict
 
 from raptus.mailcone.rules import wireit
 from raptus.mailcone.rules import interfaces
+from raptus.mailcone.rules import relations
 
 from raptus.mailcone.core import utils
 from raptus.mailcone.core import bases
@@ -23,8 +24,8 @@ class Ruleset(bases.Container):
     grok.implements(interfaces.IRuleset)
     
     id = None
-    name = None
-    address = None
+    description = None
+    relations = relations.RelationContainer()
     
     def add_object(self, obj, id):
         """ override the default method and don't build a new id
@@ -90,10 +91,10 @@ class BaseRuleItem(grok.Model):
         di = dict()
         di.update(self._json_properties(factory))
         di.update(self._json_overrides(factory))
-        results = dict(id=self.id,
-                       properties=di,
-                       position=self._position())
-        results.update(factory.metadata())
+        results = dict(factory.metadata())
+        results.update(id=self.id,
+                         properties=di,
+                         position=self._position())
         return results
             
     def _json_properties(self, factory):

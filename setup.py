@@ -27,6 +27,7 @@ setup(name='raptus.mailcone.rules',
           'setuptools',
           'fanstatic',
           'js.yui_wireit',
+          'Sphinx'
 
       ],
       entry_points={

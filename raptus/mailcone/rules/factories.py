@@ -87,6 +87,27 @@ class BaseFactory(grok.Adapter):
         return translate(msg, context=utils.getRequest())
 
 
+class BaseFactoryCondition(BaseFactory):
+    grok.baseclass()
+    
+    def box_input(self):
+        li = list()
+        li.append(dict(id='input',
+                       data=dict(direction= [-1,-1]),
+                       title=self._translate(_('input')) ))
+        return li
+    
+    def box_output(self):
+        li = list()
+        li.append(dict(id='match',
+                       data=dict(direction= [1, 1]),
+                       title=self._translate(_('match')) ))
+        li.append(dict(id='not_match',
+                       data=dict(direction= [1, 1]),
+                       title=self._translate(_('do not match')) ))
+        return li
+
+
 class InputFactory(BaseFactory):
     grok.name('raptus.mailcone.rules.input')
     grok.implements(interfaces.IInputItemFactory)
@@ -104,11 +125,13 @@ class InputFactory(BaseFactory):
 
     def box_output(self):
         li = list()
-        li.append(dict(title=self._translate(_('mailoutput')) ))
+        li.append(dict(id='mailoutput',
+                       data=dict(direction= [1, 1]),
+                       title=self._translate(_('mailoutput')) ))
         return li
 
 
-class InputCustomerFactory(BaseFactory):
+class InputCustomerFactory(InputFactory):
     grok.name('raptus.mailcone.rules.inputcustomer')
     grok.implements(interfaces.IInputItemFactory)
     
@@ -117,14 +140,3 @@ class InputCustomerFactory(BaseFactory):
     description = _('All mails for each customer came in through the Input Element')
     ruleitem_class = contents.InputCustomerItem
 
-
-    def box_buttons(self):
-        li = list()
-        li.append(self.box_buttons_delete())
-        return li
-
-    def box_output(self):
-        li = list()
-        li.append(dict(title=self._translate(_('mailoutput')) ))
-        return li
-    

@@ -1,5 +1,6 @@
 wireit = {
     init: function(){
+        wireit.yui_patch();
         wireit._form_controls_mapping();
         wireit.toolbox();
         wireit.toolbox_button();
@@ -63,15 +64,18 @@ wireit = {
     
     
     submit_workspace: function(){
-        var di = {ruleitems:[]};
+        var di = {ruleitems:[],
+                  relations:[]};
         $('.wireit-rulebox:not(#wireit-rulebox-template)').each(function(){
             wireit.data_crapper($(this));
             di.ruleitems.push($(this).data('metadata'));
+            $.merge(di.relations, wireit.relation_crapper($(this)));
         });
         var form = $('body').append('<form method="post">'+
                      '<input type="hidden" name="metadata" value=""/>'+
                      '</form>').find('form:last');console.log(di);
         form.find('input').val(JSON.stringify(di));
+        alert(JSON.stringify(di));
         form.submit();
     },
     
@@ -84,15 +88,34 @@ wireit = {
           wireit.update_rulebox(box);
           box.removeClass('skeleton');
       });
+      $.each(data.relations, function(index, rel){
+          wireit.yui_add_wire(rel);
+      });
     },
     
     
-    data_crapper: function(box){console.log(box);
+    data_crapper: function(box){
         var data = box.data('metadata');
         data['id'] = box.attr('id');
         data['position'] = box.position();
-        
-        box.data('metadata', data);console.log(box.data('metadata'));console.log(data);
+    },
+    
+    
+    relation_crapper: function(box){
+        list = [];
+        $.each(box.data('terminals'), function(index, terminal){
+            $.each(terminal.wires, function(index, wire){
+                var t1 = $(wire.terminal1.el);
+                var t2 = $(wire.terminal2.el);
+                if (t2.parents('.wireit-rulebox').attr('id') == box.attr('id'))
+                    return;
+                list.push({ terminal1:{object_id:t1.parents('.wireit-rulebox').attr('id'),
+                                       terminal_id:wire.terminal1.id },
+                            terminal2:{object_id:t2.parents('.wireit-rulebox').attr('id'),
+                                       terminal_id:wire.terminal2.id }});
+            });
+        });
+        return list;
     },
     
     
@@ -122,13 +145,12 @@ wireit = {
             di[$(this).attr('name')] = value;
         });
         data['properties'] = di;
-        box.data('metadata', data);
         wireit.update_rulebox(box);
         dialog.dialog('close');
     },
 
 
-    build_rulebox: function(uid){console.log(uid);
+    build_rulebox: function(uid){
         var clone = $('#wireit-rulebox-template').clone();
         if (!uid)
             var uid = wireit.uid();
@@ -162,7 +184,8 @@ wireit = {
                 ui_elements._ajax_modal(button.ajax, $(this), {identifer:JSON.stringify(data.identifer)}, callback);
             });
         });
-        box.data('metadata', data);
+        // must be a copy of the dict. $.extend do this! 
+        box.data('metadata', $.extend({},data));
         ui_elements.init(box);
         wireit.yui_boxinit(box);
     },
@@ -213,101 +236,66 @@ wireit = {
         $.each(data.input, function(index, term){
             var li = $(box.find('.boxtop li')[index]);
             var x = li.position().left + li.width()/2 - 3; // terminal width correction
-            terminals.push(new WireIt.util.TerminalInput(block, {direction: [-1,-1], offsetPosition: [x,-22]}));
+            var settings = {offsetPosition: [x,-22]};
+            var terminal = new WireIt.util.TerminalInput(block, $.extend(settings, term.data));
+            terminal.id = term.id; // patch id on object
+            terminals.push(terminal);
         });
         $.each(data.output, function(index, term){
             var y = box.height() - 7; // terminal width correction
             var li = $(box.find('.boxbottom li')[index]);
             var x = li.position().left + li.width()/2 - 3; // terminal width correction
-            terminals.push(new WireIt.util.TerminalOutput(block, {direction: [1,1], offsetPosition: [x,y]}));
+            var settings = {offsetPosition: [x,y]};
+            var terminal = new WireIt.util.TerminalOutput(block, $.extend(settings, term.data));
+            terminal.id = term.id; // patch id on object
+            terminals.push(terminal);
         });
         box.data('terminals', terminals);
         
         new WireIt.util.DD(terminals, block);
     },
     
+    
+    yui_add_wire: function(rel){
+        var t1, t2;
+        $.each($('#'+rel.terminal1.object_id).data('terminals'), function(index, term){
+            if (rel.terminal1.terminal_id == term.id)
+                t1 = term;
+        });
+        $.each($('#'+rel.terminal2.object_id).data('terminals'), function(index, term){
+            if (rel.terminal2.terminal_id == term.id)
+                t2 = term;
+        });
+        var parent = YAHOO.util.Dom.get('wireit-workspace');
+        wire = new WireIt.Wire(t1, t2, parent, {});
+        wire.redraw();
+    },
+    
+    
+    yui_patch: function(){
+        // monkey-patch
+        var old_function = WireIt.Terminal.prototype.getXY;
+        var new_function = function(){
+            box = $(this.el).parent().position();
+            ter = $(this.el).position();
+            return [box.left + ter.left + 15,box.top + ter.top + 15];
+        }
+        WireIt.Terminal.prototype.getXY = new_function;
+        
+        var old_function = WireIt.TerminalProxy.prototype.startDrag;
+        var new_function = function(){
+            re = old_function.call(this);
+            this.fakeTerminal.getXY = function() { 
+                var org = $('#wireit-workspace').offset()
+                return [this.pos[0]-org.left + 15, this.pos[1]-org.top + 15];
+            }
+            return re;
+        }
+        WireIt.TerminalProxy.prototype.startDrag = new_function;
+    },
+    
 }
 
 jQuery(document).ready(wireit.init);
-
-// YUI and WireIt stuff
-
-WireIt.util.MailconeDD = function( terminals, id, layer, sGroup, config) {
-    WireIt.util.MailconeDD.superclass.constructor.call(this, terminals, id, sGroup, config);
-    this.layer = layer;
-    this.initTerminals();
-    this.initOptions();
-};
-
-YAHOO.lang.extend(WireIt.util.MailconeDD, WireIt.util.DD, {
-
-    initTerminals: function() {
-      for(var i = 0 ; i < this._WireItTerminals.length ; i++) {
-         this._WireItTerminals[i].container= this;
-      }
-   },
-   
-   
-   initOptions: function() {
-        this.options = {};
-   },
-});
-
-// monkey-patch
-window.onload = function(){
-    var old_function = WireIt.Terminal.prototype.getXY;
-    var new_function = function(){
-        box = $(this.el).parent().position();
-        ter = $(this.el).position();
-        return [box.left + ter.left + 15,box.top + ter.top + 15];
-    }
-    WireIt.Terminal.prototype.getXY = new_function;
-    
-    var old_function = WireIt.TerminalProxy.prototype.startDrag;
-    var new_function = function(){
-        re = old_function.call(this);
-        this.fakeTerminal.getXY = function() { 
-            var org = $('#wireit-workspace').offset()
-            return [this.pos[0]-org.left + 15, this.pos[1]-org.top + 15];
-        }
-        return re;
-    }
-    WireIt.TerminalProxy.prototype.startDrag = new_function;
-}
-
-
-
-/*
-
-
-
-window.onload = function() {
-    
-    // Create 2 terminals into Block1
-    var block1 = YAHOO.util.Dom.get('block1');
-    var terminals1 = [new WireIt.Terminal(block1, {direction: [-1,0], offsetPosition: [-14,35]}), 
-                            new WireIt.Terminal(block1, {direction: [1,0], offsetPosition: [85,35]})];
-    
-    // Make the block1 draggable
-    new WireIt.util.DD(terminals1,block1); 
-    
-    // Create 2 terminals into Block2
-    var block2 = YAHOO.util.Dom.get('block2');
-    var terminals2 = [new WireIt.Terminal(block2, {direction: [-1,0], offsetPosition: [-14,35]}), 
-                            new WireIt.Terminal(block2, {direction: [1,0], offsetPosition: [85,35]})];
-    
-    // Make the block2 draggable
-    new WireIt.util.DD(terminals2,block2);
-    
-    // Create a wire between some terminals
-    var w1 = new WireIt.BezierWire(terminals1[0], terminals2[0], document.body);
-    w1.redraw();
-    
-    var w2 = new WireIt.BezierWire(terminals1[1], terminals2[1], document.body);
-    w2.redraw();
-    
-};
-*/
-
 
 
