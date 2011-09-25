@@ -37,7 +37,6 @@
             </tal:block>
         </div>
         
-        <form method="post">
         <div id="actionsView">
           <span class="actionButtons button-group">
             <input type="submit"
@@ -48,7 +47,6 @@
                    class="button" />
           </span>
         </div>
-        </form>
     </div>
     
     <div id="wireit-workspace"

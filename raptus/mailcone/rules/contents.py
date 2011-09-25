@@ -6,6 +6,7 @@ from grokcore.formlib import formlib
 
 from zope import schema
 from zope.formlib import form
+from zope.annotation.interfaces import IAnnotations
 
 from persistent.dict import PersistentDict
 
@@ -19,13 +20,20 @@ from raptus.mailcone.core import bases
 from raptus.mailcone.core.interfaces import IMailcone, ISearchable
 
 
+RELATIONS_ANNOTATIONS_KEY = 'raptus.mailcone.rules.relations'
 
 class Ruleset(bases.Container):
     grok.implements(interfaces.IRuleset)
     
     id = None
     description = None
-    relations = relations.RelationContainer()
+    
+    @property
+    def relations(self):
+        storage = IAnnotations(self)
+        if not storage.has_key(RELATIONS_ANNOTATIONS_KEY):
+            storage[RELATIONS_ANNOTATIONS_KEY] = relations.RelationContainer()
+        return storage[RELATIONS_ANNOTATIONS_KEY]
     
     def add_object(self, obj, id):
         """ override the default method and don't build a new id

@@ -1,4 +1,5 @@
 <div class="ui-tabs">
+    <h1 tal:content="view.title">Simple Match thing</h1>
     <ul>
         <li tal:repeat="tab view.tabs">
             <a tal:content="tab.get('title')"

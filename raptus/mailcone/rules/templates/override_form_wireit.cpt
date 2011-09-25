@@ -3,24 +3,24 @@
     <p i18n:translate="">
         Each attribute can be overrided by settings of customer.
     </p>
-    
-    <ul>
-        <li tal:attributes="class '%s.title' % view.override_prefix"
-            tal:repeat="field view.overrides">
-            <label tal:attributes="for '%s.%s' % (view.override_prefix, field.field.getName())">
-              <span tal:content="field.field.title">
-                  Title
-              </span>
-            </label>
-            <div class="widget">
-                <input type="checkbox"
-                       value=""
-                       tal:attributes="name '%s.%s' % (view.override_prefix, field.field.getName());
-                                      id '%s.%s' % (view.override_prefix, field.field.getName())"
-                       class="checkboxType"/>
-            </div>
-        </li>
-    </ul>
-    
+    <form>
+        <ul>
+            <li tal:attributes="class '%s.title' % view.override_prefix"
+                tal:repeat="field view.overrides">
+                <label tal:attributes="for '%s.%s' % (view.override_prefix, field.field.getName())">
+                  <span tal:content="field.field.title">
+                      Title
+                  </span>
+                </label>
+                <div class="widget">
+                    <input type="checkbox"
+                           value=""
+                           tal:attributes="name '%s.%s' % (view.override_prefix, field.field.getName());
+                                          id '%s.%s' % (view.override_prefix, field.field.getName())"
+                           class="checkboxType"/>
+                </div>
+            </li>
+        </ul>
+    </form>
     
 </div>

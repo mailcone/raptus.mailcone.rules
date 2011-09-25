@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import grok
 
@@ -6,6 +7,7 @@ from grokcore import message
 from grokcore.view.interfaces import ITemplateFileFactory
 
 from zope import component
+from zope.i18n import translate
 
 from persistent.dict import PersistentDict
 
@@ -13,7 +15,7 @@ from raptus.mailcone.rules import _
 from raptus.mailcone.rules import interfaces
 from raptus.mailcone.rules import resource
 
-from raptus.mailcone.layout.views import Page, DeleteForm, AddForm
+from raptus.mailcone.layout.views import Page, DeleteForm, AddForm, ReStructuredMixing
 
 grok.templatedir('templates')
 
@@ -146,7 +148,7 @@ class RuleBoxDeleteForm(DeleteForm, IdentifierMixing):
         """
 
 
-class RuleBoxEditForm(AddForm, IdentifierMixing):
+class RuleBoxEditForm(ReStructuredMixing, AddForm, IdentifierMixing):
     grok.name('wireit_edit')
     grok.context(interfaces.IRuleset)
     
@@ -159,7 +161,11 @@ class RuleBoxEditForm(AddForm, IdentifierMixing):
         self.template = component.getUtility(ITemplateFileFactory, name='cpt')(filename=filepath)
         self.factory = self.identifer()
         return super(RuleBoxEditForm, self).__call__()
-    
+
+    @property
+    def title(self):
+        return self.factory.title
+
     @property
     def form_fields(self):
         return self.factory.form_fields
@@ -179,7 +185,16 @@ class RuleBoxEditForm(AddForm, IdentifierMixing):
         filepath = os.path.join(os.path.dirname(__file__),'templates','verify_form_wireit.cpt')
         return component.getUtility(ITemplateFileFactory, name='cpt')(filename=filepath).render(self)
     
+    
     def infohtml(self):
+        # hook for translating possibility
+        i18n = _('description_info_tab_%s' % getattr(self.factory,'grokcore.component.directive.name'), default=False)
+        i18n = translate(i18n, context=self.request)
+        if i18n:
+            return i18n
+        filepath = os.path.join(os.path.dirname(sys.modules[self.factory.__module__].__file__),'description.rst')
+        if os.path.exists(filepath):
+            return component.getUtility(ITemplateFileFactory, name='rst')(filename=filepath).render(self)
         return '<p>%s</p>' % self.factory.description
     
     @property

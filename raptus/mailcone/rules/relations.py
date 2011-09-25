@@ -1,5 +1,4 @@
 from persistent import Persistent
-from persistent.list import PersistentList
 
 
 
@@ -16,7 +15,6 @@ class RelationContainer(Persistent):
             t2 = rel.get('terminal2')
             self.relations.append(Relation(t1.get('object_id'), t1.get('terminal_id'),
                                            t2.get('object_id'), t2.get('terminal_id')))
-        self._p_changed = 1
 
     def get_data(self):
         li = list()
