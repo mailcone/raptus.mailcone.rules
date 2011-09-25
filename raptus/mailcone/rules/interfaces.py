@@ -30,7 +30,7 @@ class IRuleset(interface.Interface):
 class IRuleItem(interface.Interface):
     """ Base interface
     """
-    
+    title = interface.Attribute('a static title of this item')
     position = interface.Attribute('per. dict where the position are stored (required for js)')
     overrides = interface.Attribute('per. dict attribute:boolean store all attributes where can be override by a customer')
     indentifer = interface.Attribute('per. dict store the used factory for this element')

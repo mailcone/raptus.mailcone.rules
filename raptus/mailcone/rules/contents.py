@@ -90,6 +90,7 @@ class BaseRuleItem(grok.Model):
         di = dict()
         for name, value in data.iteritems():
             if name.startswith('%s.'%self.override_prefix):
+                name = name[len('%s.'%self.override_prefix):]
                 di[name] = value
         self.overrides = PersistentDict(di)
 
@@ -115,7 +116,10 @@ class BaseRuleItem(grok.Model):
         return properties
 
     def _json_overrides(self, factory):
-        return self.overrides
+        di = dict()
+        for k, v in self.overrides.iteritems():
+            di['%s.%s' % (self.override_prefix, k,)] = v
+        return di
 
     def _position(self):
         """ need make a int instead of a float to parse it with json
@@ -149,9 +153,10 @@ class BaseActionItem(BaseRuleItem):
 
 class InputItem(BaseInputItem):
     grok.implements(interfaces.IInputItem)
+    title = 'Input'
 
 
 class InputCustomerItem(BaseInputItem):
     grok.implements(interfaces.IInputItem)
-    
+    title = 'Customer Input'
     

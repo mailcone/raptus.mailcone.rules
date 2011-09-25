@@ -21,7 +21,7 @@ grok.templatedir('templates')
 
 
 class IdentifierMixing(object):
-    def identifer(self, identifer=None):
+    def identifer(self, identifer=None, context=None):
         """ find for each ruleitem the factory class
         """
         if identifer is None:
@@ -29,6 +29,8 @@ class IdentifierMixing(object):
         name = identifer.get('name')
         implements = identifer.get('implements')
         interface = None
+        if context is None:
+            context = self.context
         for i in implements:
             mod = i.get('module')
             inter = i.get('interface')
@@ -37,7 +39,7 @@ class IdentifierMixing(object):
             if issubclass(inter, interfaces.IRuleItemFactory):
                 interface = inter
                 break
-        return component.queryAdapter(self.context, interface, name=name)
+        return component.queryAdapter(context, interface, name=name)
 
 
 class WireItBoard(Page, IdentifierMixing):
@@ -50,14 +52,14 @@ class WireItBoard(Page, IdentifierMixing):
     def __call__(self):
         data = self.request.form.get('metadata', None)
         if data:
-            self.parse(json.loads(data))
+            self.process(json.loads(data))
             self.redirect(grok.url(self.request, self.context.__parent__))
             message.send(_('ruleset successfully saved'))
             return
         
         return super(WireItBoard, self).__call__()
         
-    def parse(self, data):
+    def process(self, data):
         ruleitems = data.get('ruleitems')
         
         #create all new items

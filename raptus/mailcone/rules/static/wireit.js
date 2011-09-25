@@ -135,15 +135,7 @@ wireit = {
         var dialog = $('#ui-modal-content');
         var box = $(wireit.lastbuttonevent.target).parents('.wireit-rulebox');
         var data = box.data('metadata');
-        var di = {};
-        dialog.find('input, textarea, select').val(function(index, value){
-            if ($(this).is(':checkbox')){
-                //special case for ckeckboxes, maybe we need some more..
-                di[$(this).attr('name')] = $(this).is(':checked');
-                return;
-            }
-            di[$(this).attr('name')] = value;
-        });
+        var di = ui_elements._data_crapper(dialog);
         data['properties'] = di;
         wireit.update_rulebox(box);
         dialog.dialog('close');
