@@ -150,7 +150,7 @@ class RuleBoxDeleteForm(DeleteForm, IdentifierMixing):
         """
 
 
-class RuleBoxEditForm(ReStructuredMixing, AddForm, IdentifierMixing):
+class RuleBoxEditForm(ReStructuredMixing, IdentifierMixing, AddForm):
     grok.name('wireit_edit')
     grok.context(interfaces.IRuleset)
     
