@@ -17,7 +17,7 @@ from raptus.mailcone.rules import relations
 
 from raptus.mailcone.core import utils
 from raptus.mailcone.core import bases
-from raptus.mailcone.core.interfaces import IMailcone, ISearchable
+from raptus.mailcone.core.interfaces import IMailcone
 
 
 RELATIONS_ANNOTATIONS_KEY = 'raptus.mailcone.rules.relations'
