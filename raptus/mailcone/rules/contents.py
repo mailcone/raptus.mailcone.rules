@@ -5,6 +5,7 @@ import json
 from grokcore.formlib import formlib
 
 from zope import schema
+from zope import component
 from zope.formlib import form
 from zope.annotation.interfaces import IAnnotations
 
@@ -18,9 +19,16 @@ from raptus.mailcone.rules import relations
 from raptus.mailcone.core import utils
 from raptus.mailcone.core import bases
 from raptus.mailcone.core.interfaces import IMailcone
+from raptus.mailcone.customers.interfaces import ICustomersContainerLocator
 
 
+
+
+
+logger = logging.getLogger('raptus.mailcone.rules')
 RELATIONS_ANNOTATIONS_KEY = 'raptus.mailcone.rules.relations'
+
+
 
 class Ruleset(bases.Container):
     grok.implements(interfaces.IRuleset)
@@ -129,6 +137,11 @@ class BaseRuleItem(grok.Model):
             pos[name] = int(value)
         return pos
 
+    def _terminals(self, name):
+        container = utils.parent(self)
+        return container.relations.get(self, name)
+
+
 
 class BaseInputItem(BaseRuleItem):
     grok.baseclass()
@@ -155,8 +168,24 @@ class InputItem(BaseInputItem):
     grok.implements(interfaces.IInputItem)
     title = 'Input'
 
+    def process(self, charter):
+        for item in self._terminals('mailoutput'):
+            item.process(charter.copy())
+
 
 class InputCustomerItem(BaseInputItem):
     grok.implements(interfaces.IInputItem)
     title = 'Customer Input'
     
+    def process(self, charter):
+        for item in self._terminals('mailoutput'):
+            for customer in component.getUtility(ICustomersContainerLocator)().objects():
+                copy = charter.copy()
+                copy.customer = customer
+            item.process(copy)
+
+
+
+
+
+

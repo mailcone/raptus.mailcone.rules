@@ -27,6 +27,14 @@ class RelationContainer(Persistent):
             li.append(di)
         return li
 
+    def get(self, object, name):
+        """ return a generator for a given ruleitem and terminal
+        """
+        for rel in self.relations:
+            if rel.object1 == object and rel.terminal1 == name:
+                yield rel
+
+
 
 class Relation(Persistent):
     """ a mapping between to IRuleItem and her terminal input/output

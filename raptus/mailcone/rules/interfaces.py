@@ -6,14 +6,20 @@ from raptus.mailcone.core.interfaces import IContainerLocator
 
 from raptus.mailcone.rules import _
 
+
+
+
+
 class IRulesetContainer(IContainer):
     """ A container for rulesets
     """
 
 
+
 class IRulesetContainerLocator(IContainerLocator):
     """ interface for locate the customers folder.
     """
+
 
 
 class IRuleset(interface.Interface):
@@ -22,7 +28,6 @@ class IRuleset(interface.Interface):
     id = schema.TextLine(title=_(u'Id'), required=True)
     name = schema.TextLine(title=_(u'Name'), required=True)
     description = schema.Text(title=u'description', required=False)
-    
     relations = interface.Attribute('RelationContainer with all relation between Ruleitem')
 
 
@@ -34,11 +39,18 @@ class IRuleItem(interface.Interface):
     position = interface.Attribute('per. dict where the position are stored (required for js)')
     overrides = interface.Attribute('per. dict attribute:boolean store all attributes where can be override by a customer')
     indentifer = interface.Attribute('per. dict store the used factory for this element')
+    
+    def process(self, mailcharter):
+        """ process all mails in the given mailcharter
+        """
+
 
 
 class IInputItem(IRuleItem):
     """ first node element in flowchart
     """
+
+
 
 class IConditionItem(IRuleItem):
     """ check if a mail match and pass to next condition or action.
@@ -46,7 +58,7 @@ class IConditionItem(IRuleItem):
     
     title = schema.TextLine(title=_('Title'), required=True, description=_('title of the condition rule'),)
     description = schema.Text(title=u'Description', required=False, description=_('description of the condition rule'),)
-                             
+
 
 
 class IActionItem(IRuleItem):
@@ -55,7 +67,8 @@ class IActionItem(IRuleItem):
     
     title = schema.TextLine(title=_(u'Title'), required=True, description=_('title of the action item'),)
     description = schema.Text(title=u'Description', required=False, description=_('description of the action item'),)
-    
+
+
 
 class IRuleItemFactory(interface.Interface):
     """ Base interface
@@ -78,15 +91,19 @@ class IRuleItemFactory(interface.Interface):
     def create(self):
         """ create and return a new RuleItem
         """
-    
+
+
+
 class IInputItemFactory(IRuleItemFactory):
     """ special adapter to build the first node element in flowchart
     """
 
 
+
 class IConditionItemFactory(IRuleItemFactory):
     """ adapter to build a IConditionItem
     """
+
 
 
 class IActionItemFactory(IRuleItemFactory):
