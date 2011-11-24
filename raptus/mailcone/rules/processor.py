@@ -28,7 +28,7 @@ def process():
 class MailCharter(object):
     
     customer = None
-    mail = list()
+    mails = list()
     
     
     def __init__(self, mails=None):

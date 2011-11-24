@@ -1,5 +1,8 @@
 from persistent import Persistent
 
+from raptus.mailcone.core import utils
+
+
 
 
 class RelationContainer(Persistent):
@@ -27,11 +30,12 @@ class RelationContainer(Persistent):
             li.append(di)
         return li
 
-    def get(self, object, name):
+    def get(self, rule, name):
         """ return a generator for a given ruleitem and terminal
         """
         for rel in self.relations:
-            if rel.object1 == object and rel.terminal1 == name:
+            if ((rel.object1 == rule.id and rel.terminal1 == name) or
+               (rel.object2 == rule.id and rel.terminal2 == name)):
                 yield rel
 
 
@@ -47,6 +51,13 @@ class Relation(Persistent):
         self.terminal2 = terminal2
         self._p_changed = True
         
+    def peer(self, rule):
+        container = utils.parent(rule)
+        if rule.id == self.object1:
+            return container[self.object2]
+        if rule.id == self.object2:
+            return container[self.object1]
+        return None
 
 
 

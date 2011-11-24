@@ -1,6 +1,7 @@
 import grok
 import copy
 import json
+import logging
 
 from grokcore.formlib import formlib
 
@@ -137,7 +138,7 @@ class BaseRuleItem(grok.Model):
             pos[name] = int(value)
         return pos
 
-    def _terminals(self, name):
+    def _relations(self, name):
         container = utils.parent(self)
         return container.relations.get(self, name)
 
@@ -148,12 +149,38 @@ class BaseInputItem(BaseRuleItem):
     grok.implements(interfaces.IInputItem)
 
 
+
 class BaseConditionItem(BaseRuleItem):
     grok.baseclass()
     grok.implements(interfaces.IConditionItem)
 
     title = u''
     description = u''
+
+    def check(self, mail):
+        NotImplementedError('you need to override check method in your subclass!')
+    
+    def test(self, mail):
+        return 'todo'
+
+    def process(self, charter):
+        
+        match = list()
+        notmatch = list()
+        
+        for mail in charter.mails:
+            if self.check(mail):
+                match.append(mail)
+            else:
+                notmatch.append(mail)
+            
+        for rel in self._relations('match'):
+            copy = charter.copy(match)
+            rel.peer(self).process(copy)
+        for rel in self._relations('not_match'):
+            copy = charter.copy(notmatch)
+            rel.peer(self).process(copy)
+
 
 
 class BaseActionItem(BaseRuleItem):
@@ -162,6 +189,7 @@ class BaseActionItem(BaseRuleItem):
 
     title = u''
     description = u''
+    
 
 
 class InputItem(BaseInputItem):
@@ -169,8 +197,10 @@ class InputItem(BaseInputItem):
     title = 'Input'
 
     def process(self, charter):
-        for item in self._terminals('mailoutput'):
-            item.process(charter.copy())
+        for rel in self._relations('mailoutput'):
+            copy = charter.copy()
+            rel.peer(self).process(copy)
+
 
 
 class InputCustomerItem(BaseInputItem):
@@ -178,11 +208,11 @@ class InputCustomerItem(BaseInputItem):
     title = 'Customer Input'
     
     def process(self, charter):
-        for item in self._terminals('mailoutput'):
+        for rel in self._relations('mailoutput'):
             for customer in component.getUtility(ICustomersContainerLocator)().objects():
                 copy = charter.copy()
                 copy.customer = customer
-            item.process(copy)
+                rel.peer(self).process(copy)
 
 
 
