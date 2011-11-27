@@ -27,7 +27,7 @@ class IRuleset(interface.Interface):
     """
     id = schema.TextLine(title=_(u'Id'), required=True)
     name = schema.TextLine(title=_(u'Name'), required=True)
-    description = schema.Text(title=u'description', required=False)
+    description = schema.Text(title=u'Description', required=False)
     relations = interface.Attribute('RelationContainer with all relation between Ruleitem')
 
 
