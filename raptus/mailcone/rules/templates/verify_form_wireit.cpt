@@ -1,2 +1,11 @@
-<div class="">
+<div class="ui-splitter"
+     i18n:domain="raptus.mailcone.mails">
+    <div class="primar-view">
+      <div>
+        <div tal:replace="structure view.mailstable" />
+      </div>
+    </div>
+    <textarea id="ui-console" i18n:translate="">
+        select a mail above to test this rule
+    </textarea>
 </div>

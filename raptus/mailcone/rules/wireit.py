@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import grok
+import transaction
 
 from grokcore import message
 from grokcore.view.interfaces import ITemplateFileFactory
@@ -11,13 +12,21 @@ from zope.i18n import translate
 
 from persistent.dict import PersistentDict
 
+from raptus.mailcone.layout.datatable import BaseDataTableSql
+from raptus.mailcone.layout.views import Page, DeleteForm, AddForm, ReStructuredMixing
+
+from raptus.mailcone.mails.contents import Mail
+from raptus.mailcone.mails.interfaces import IMail
+
 from raptus.mailcone.rules import _
 from raptus.mailcone.rules import interfaces
 from raptus.mailcone.rules import resource
 
-from raptus.mailcone.layout.views import Page, DeleteForm, AddForm, ReStructuredMixing
 
 grok.templatedir('templates')
+
+
+
 
 
 class IdentifierMixing(object):
@@ -40,6 +49,7 @@ class IdentifierMixing(object):
                 interface = inter
                 break
         return component.queryAdapter(context, interface, name=name)
+
 
 
 class WireItBoard(Page, IdentifierMixing):
@@ -150,6 +160,45 @@ class RuleBoxDeleteForm(DeleteForm, IdentifierMixing):
         """
 
 
+
+class RuleBoxEditVerify(WireItBoard):
+    grok.name('rule_box_edit_verify')
+    
+    def __call__(self):
+        super(RuleBoxEditVerify, self).__call__()
+        transaction.abort()
+        
+        return 'empty test'
+
+
+
+class RuleBoxEditVerifyDataTables(BaseDataTableSql):
+    grok.context(interfaces.IRuleset)
+    interface_fields = IMail
+    select_fields = ['id', 'mail_from', 'subject']
+    model = Mail
+    actions = (dict( title = _('test'),
+                     cssclass = 'ui-icon ui-icon-check ui-datatable-console',
+                     link = 'rule_box_edit_verify'),)
+
+    def _linkbuilder(self, action, brain):
+        href = grok.url(self.request, self.context, 'rule_box_edit_verify', dict(mail=brain.id))
+        ac = dict(href=href)
+        ac.update(action)
+        return '<a href="%(href)s" class="ui-table-action %(cssclass)s" title="%(title)s">%(title)s</a>' % ac
+
+
+
+class RuleBoxEditVerifyView(grok.View):
+    grok.context(interfaces.IRuleset)
+    grok.template('verify_form_wireit')
+    
+    @property
+    def mailstable(self):
+        return RuleBoxEditVerifyDataTables(self.context, self.request).html()
+
+
+
 class RuleBoxEditForm(ReStructuredMixing, IdentifierMixing, AddForm):
     grok.name('wireit_edit')
     grok.context(interfaces.IRuleset)
@@ -184,8 +233,7 @@ class RuleBoxEditForm(ReStructuredMixing, IdentifierMixing, AddForm):
         return self.factory.override_properties()
 
     def verifyhtml(self):
-        filepath = os.path.join(os.path.dirname(__file__),'templates','verify_form_wireit.cpt')
-        return component.getUtility(ITemplateFileFactory, name='cpt')(filename=filepath).render(self)
+        return RuleBoxEditVerifyView(self.context, self.request)()
     
     
     def infohtml(self):
