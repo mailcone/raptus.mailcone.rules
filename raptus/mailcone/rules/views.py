@@ -24,13 +24,13 @@ class RulesetsTable(BaseDataTable):
     grok.context(interfaces.IRulesetContainer)
     interface_fields = interfaces.IRuleset
     ignors_fields = ['id']
-    actions = (dict( title = _('delete'),
+    actions = (dict( title = _('Delete'),
                      cssclass = 'ui-icon ui-icon-trash ui-modal-minsize ui-datatable-ajaxlink',
                      link = 'deleterulesetform'),
-               dict( title = _('open'),
+               dict( title = _('Open'),
                      cssclass = 'ui-icon ui-icon-arrow-4-diag',
                      link = 'ruleboard'),
-               dict( title = _('edit'),
+               dict( title = _('Edit'),
                      cssclass = 'ui-icon ui-icon-pencil ui-datatable-ajaxlink',
                      link = 'editrulesetform'),)
 
