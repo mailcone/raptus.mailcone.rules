@@ -60,6 +60,10 @@ wireit = {
         ui_elements.form_controls_mapping['form.actions.wireit_delete'] = wireit._form_controls_delete;
         ui_elements.form_controls_mapping['properties.actions.wireit_save'] = wireit._form_controls_save;
         ui_elements.form_controls_mapping['properties.actions.cancel']= ui_elements._form_controls_cancel;
+
+        if (!ui_elements.datatable_controls_mapping)
+            ui_elements.datatable_controls_mapping = {};
+        ui_elements.datatable_controls_mapping['ui-datatable-console']= wireit._datatable_control_console;
     },
     
     
@@ -73,9 +77,8 @@ wireit = {
         });
         var form = $('body').append('<form method="post">'+
                      '<input type="hidden" name="metadata" value=""/>'+
-                     '</form>').find('form:last');console.log(di);
+                     '</form>').find('form:last');
         form.find('input').val(JSON.stringify(di));
-        alert(JSON.stringify(di));
         form.submit();
     },
     
@@ -128,6 +131,28 @@ wireit = {
         
         box.remove();
         dialog.dialog('close');
+    },
+
+    _datatable_control_console: function(){
+      $(this).click(function(){
+          var mail = $(this).attr('href').match(/\?mail=(.*)$/)[1];
+          var box = $(wireit.lastbuttonevent.target).parents('.wireit-rulebox');
+          var di = {ruleitem_to_verify: box.data('metadata').id,
+                    mail_to_verify: mail,
+                    ruleitems:[],
+                    relations:[]};
+          $('.wireit-rulebox:not(#wireit-rulebox-template)').each(function(){
+              wireit.data_crapper($(this));
+              di.ruleitems.push($(this).data('metadata'));
+              $.merge(di.relations, wireit.relation_crapper($(this)));
+          });
+          var data = JSON.stringify(di);
+          data = {metadata:data};
+          $.post($(this).attr('href'), data,function(data){
+              $('#ui-console').append('\n'+data);
+          });
+          return false;
+      });
     },
 
 

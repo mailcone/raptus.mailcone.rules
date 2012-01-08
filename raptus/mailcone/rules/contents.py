@@ -160,8 +160,15 @@ class BaseConditionItem(BaseRuleItem):
     def check(self, mail):
         NotImplementedError('you need to override check method in your subclass!')
     
-    def test(self, mail):
-        return 'todo'
+    def test(self, mail, factory):
+        try:
+            if self.check(mail):
+                return "Rule for %s@%s match" % (factory.title, self.title,)
+            else:
+                return "Rule for %s@%s dosen't match" % (factory.title, self.title,)
+        except Exception, e:
+            return str(e)
+            
 
     def process(self, charter):
         

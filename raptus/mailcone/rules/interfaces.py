@@ -58,6 +58,15 @@ class IConditionItem(IRuleItem):
     
     title = schema.TextLine(title=_('Title'), required=True, description=_('title of the condition rule'),)
     description = schema.Text(title=u'Description', required=False, description=_('description of the condition rule'),)
+    
+    def test(self, email, factory):
+        """ test if this rule match
+            and return a string with matching information for display
+        """
+        
+    def process(self, charter):
+        """ process this rule and call the next process on a rule
+        """
 
 
 

@@ -16,7 +16,7 @@ from raptus.mailcone.layout.datatable import BaseDataTableSql
 from raptus.mailcone.layout.views import Page, DeleteForm, AddForm, ReStructuredMixing
 
 from raptus.mailcone.mails.contents import Mail
-from raptus.mailcone.mails.interfaces import IMail
+from raptus.mailcone.mails.interfaces import IMail, IMailContainerLocator
 
 from raptus.mailcone.rules import _
 from raptus.mailcone.rules import interfaces
@@ -165,10 +165,20 @@ class RuleBoxEditVerify(WireItBoard):
     grok.name('rule_box_edit_verify')
     
     def __call__(self):
-        super(RuleBoxEditVerify, self).__call__()
+        data = self.request.form.get('metadata', None)
+        if not data:
+            return 'missing data can not be parsed!'
+
+        data = json.loads(data)
+        self.process(data)
+
+        container = component.getUtility(IMailContainerLocator)()
+        mail = container.get_object(data['mail_to_verify'])
+        ruleitem = self.context.get_object(data['ruleitem_to_verify'])
+        factory = self.identifer(ruleitem.identifer,)
+        results = ruleitem.test(mail, factory)
         transaction.abort()
-        
-        return 'empty test'
+        return results
 
 
 
