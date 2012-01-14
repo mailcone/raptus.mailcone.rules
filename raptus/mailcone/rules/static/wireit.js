@@ -135,6 +135,7 @@ wireit = {
 
     _datatable_control_console: function(){
       $(this).click(function(){
+          var dialog = $('#ui-modal-content');
           var mail = $(this).attr('href').match(/\?mail=(.*)$/)[1];
           var box = $(wireit.lastbuttonevent.target).parents('.wireit-rulebox');
           var di = {ruleitem_to_verify: box.data('metadata').id,
@@ -143,13 +144,18 @@ wireit = {
                     relations:[]};
           $('.wireit-rulebox:not(#wireit-rulebox-template)').each(function(){
               wireit.data_crapper($(this));
-              di.ruleitems.push($(this).data('metadata'));
+              di.ruleitems.push($.extend({},$(this).data('metadata')));
               $.merge(di.relations, wireit.relation_crapper($(this)));
+          });
+          $.each(di.ruleitems, function(index, item){
+              if (item.id == box.attr('id')){
+                  item['properties'] = ui_elements._data_crapper(dialog);
+              }
           });
           var data = JSON.stringify(di);
           data = {metadata:data};
           $.post($(this).attr('href'), data,function(data){
-              $('#ui-console').append('\n'+data);
+              $('#ui-console').append('<br/>'+data);
           });
           return false;
       });
@@ -290,7 +296,7 @@ wireit = {
     
     
     yui_patch: function(){
-        // monkey-patch
+        // monkey-patch >:-)
         var old_function = WireIt.Terminal.prototype.getXY;
         var new_function = function(){
             box = $(this.el).parent().position();

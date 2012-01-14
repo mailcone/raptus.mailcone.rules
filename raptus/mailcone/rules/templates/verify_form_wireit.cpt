@@ -3,7 +3,7 @@
     <div class="primar-view">
       <div tal:replace="structure view.mailstable" />
     </div>
-    <textarea id="ui-console" i18n:translate="">
+    <div id="ui-console" class="ui-console" i18n:translate="">
         select a mail above to test this rule
-    </textarea>
+    </div>
 </div>
