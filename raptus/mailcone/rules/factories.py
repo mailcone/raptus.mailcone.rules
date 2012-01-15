@@ -16,9 +16,15 @@ class BaseFactory(grok.Adapter):
     grok.context(interfaces.IRuleset)
 
     order = 0
+    from_display = None
     form_fields = []
     override_properties_ignors = ['title', 'description']
     ruleitem_class = None
+
+    def __init__(self, context):
+        super(BaseFactory, self).__init__(context)
+        if self.from_display is None:
+            self.from_display = self.form_fields
 
     @property
     def metadata_json(self):
@@ -45,7 +51,7 @@ class BaseFactory(grok.Adapter):
     def box_output(self):
         return list()
     
-    def box_buttons_save(self):
+    def box_buttons_edit(self):
         return dict(   icon='ui-icon-pencil',
                        title=self._translate(_('edit rule element')),
                        cssclass='ui-button',
@@ -60,7 +66,7 @@ class BaseFactory(grok.Adapter):
     def box_buttons(self):
         li = list()
         li.append(self.box_buttons_delete())
-        li.append(self.box_buttons_save())
+        li.append(self.box_buttons_edit())
         return li
     
     def box_delete(self):

@@ -8,20 +8,21 @@ from grokcore.formlib import formlib
 from zope import schema
 from zope import component
 from zope.formlib import form
+from zope.i18n import translate
 from zope.annotation.interfaces import IAnnotations
 
+from xml.sax import saxutils
 from persistent.dict import PersistentDict
-
-
-from raptus.mailcone.rules import wireit
-from raptus.mailcone.rules import interfaces
-from raptus.mailcone.rules import relations
 
 from raptus.mailcone.core import utils
 from raptus.mailcone.core import bases
 from raptus.mailcone.core.interfaces import IMailcone
 from raptus.mailcone.customers.interfaces import ICustomersContainerLocator
 
+from raptus.mailcone.rules import _
+from raptus.mailcone.rules import wireit
+from raptus.mailcone.rules import interfaces
+from raptus.mailcone.rules import relations
 
 
 
@@ -159,13 +160,18 @@ class BaseConditionItem(BaseRuleItem):
 
     def check(self, mail):
         NotImplementedError('you need to override check method in your subclass!')
+        
+    def translate(self, msg):
+        txt = translate(msg, context=utils.getRequest())
+        return saxutils.escape(txt)
     
     def test(self, mail, factory):
         try:
+            mapping = dict(factory=factory.title, title=self.title)
             if self.check(mail):
-                return "Rule for %s@%s match" % (factory.title, self.title,)
+                return self.translate(_("Rule for <${factory}@${title}> match", mapping=mapping))
             else:
-                return "Rule for %s@%s dosen't match" % (factory.title, self.title,)
+                return self.translate(_("Rule for <${factory}@${title}> dosen't match", mapping=mapping))
         except Exception, e:
             return str(e)
             

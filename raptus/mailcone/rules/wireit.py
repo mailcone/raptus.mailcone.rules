@@ -229,7 +229,7 @@ class RuleBoxEditForm(ReStructuredMixing, IdentifierMixing, AddForm):
 
     @property
     def form_fields(self):
-        return self.factory.form_fields
+        return self.factory.form_display
     
     def formhtml(self):
         return self.form_template.render(self)
