@@ -10,6 +10,8 @@ from grokcore.view.interfaces import ITemplateFileFactory
 from zope import component
 from zope.i18n import translate
 
+from js import codemirror
+
 from persistent.dict import PersistentDict
 
 from raptus.mailcone.layout.datatable import BaseDataTableSql
@@ -114,6 +116,7 @@ class WireItBoard(Page, IdentifierMixing):
     def update(self):
         super(WireItBoard, self).update()
         resource.wireit.need()
+        codemirror.python.need()
 
 
     @property
