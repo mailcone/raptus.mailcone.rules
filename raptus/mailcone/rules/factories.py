@@ -16,15 +16,15 @@ class BaseFactory(grok.Adapter):
     grok.context(interfaces.IRuleset)
 
     order = 0
-    from_display = None
+    form_display = None
     form_fields = []
     override_properties_ignors = ['title', 'description']
     ruleitem_class = None
 
     def __init__(self, context):
         super(BaseFactory, self).__init__(context)
-        if self.from_display is None:
-            self.from_display = self.form_fields
+        if self.form_display is None:
+            self.form_display = self.form_fields
 
     @property
     def metadata_json(self):

@@ -117,6 +117,7 @@ class WireItBoard(Page, IdentifierMixing):
         super(WireItBoard, self).update()
         resource.wireit.need()
         codemirror.python.need()
+        codemirror.theme_eclipse.need()
 
 
     @property

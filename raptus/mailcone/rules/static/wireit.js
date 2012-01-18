@@ -48,6 +48,8 @@ wireit = {
                                 $(this).draggable('destroy');
                                 $(this).removeClass('skeleton');
                 }});
+                test = box;
+                eve = event;
                 box.trigger(event);
             });
         });
@@ -224,13 +226,16 @@ wireit = {
     rulebox_fill_data: function(box, dialog){
         var data = box.data('metadata');
         var prop = data.properties?data.properties:{};
-        dialog.find('input, select, textarea').each(function(){
+        dialog.find('input, select, textarea, code').each(function(){
             var name = $(this).attr('name');
             if (name in prop){
                 if ($(this).is(':checkbox')){
                     $(this).attr('checked', prop[name]);
                     return;
                 }
+                // need a special hook for code widget (codemirror)
+                if($(this).is('code'))
+                    $(this).text(prop[name]);
                 $(this).val(prop[name]);
             }
         });
