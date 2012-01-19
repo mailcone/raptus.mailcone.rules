@@ -77,6 +77,15 @@ class IActionItem(IRuleItem):
     title = schema.TextLine(title=_(u'Title'), required=True, description=_('title of the action item'),)
     description = schema.Text(title=u'Description', required=False, description=_('description of the action item'),)
 
+    def test(self, email, factory):
+        """ test if this rule match
+            and return a string with matching information for display
+        """
+        
+    def process(self, charter):
+        """ process this rule and call the next process on a rule
+        """
+
 
 
 class IRuleItemFactory(interface.Interface):

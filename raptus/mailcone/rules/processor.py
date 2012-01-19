@@ -20,7 +20,7 @@ def process():
         for input in container.objects():
             if interfaces.IInputItem.providedBy(input):
                 input.process(charter.copy())
-    #charter.markAsProcessed()
+    charter.markAsProcessed()
     logger.info('%s mails marked as processed' % len(charter.mails))
     
 

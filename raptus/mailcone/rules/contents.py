@@ -143,6 +143,9 @@ class BaseRuleItem(grok.Model):
         container = utils.parent(self)
         return container.relations.get(self, name)
 
+    def translate(self, msg):
+        txt = translate(msg, context=utils.getRequest())
+        return saxutils.escape(txt)
 
 
 class BaseInputItem(BaseRuleItem):
@@ -160,10 +163,6 @@ class BaseConditionItem(BaseRuleItem):
 
     def check(self, mail):
         NotImplementedError('you need to override check method in your subclass!')
-        
-    def translate(self, msg):
-        txt = translate(msg, context=utils.getRequest())
-        return saxutils.escape(txt)
     
     def test(self, mail, factory):
         try:

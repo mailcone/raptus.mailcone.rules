@@ -93,6 +93,7 @@ class BaseFactory(grok.Adapter):
         return translate(msg, context=utils.getRequest())
 
 
+
 class BaseFactoryCondition(BaseFactory):
     grok.baseclass()
     
@@ -112,6 +113,17 @@ class BaseFactoryCondition(BaseFactory):
                        data=dict(direction= [1, 1]),
                        title=self._translate(_('do not match')) ))
         return li
+
+
+
+class BaseFactoryAction(BaseFactory):
+    grok.baseclass()
+
+    def box_input(self):
+        li = list()
+        li.append(dict(title=self._translate(_('input')) ))
+        return li
+
 
 
 class InputFactory(BaseFactory):
@@ -135,6 +147,7 @@ class InputFactory(BaseFactory):
                        data=dict(direction= [1, 1]),
                        title=self._translate(_('mailoutput')) ))
         return li
+
 
 
 class InputCustomerFactory(InputFactory):
