@@ -11,18 +11,57 @@ wireit = {
     toolbox: function(){
         var dialog = $('#wireit-toolbox');
         ui_elements._init_dialog(dialog);
+        
         dialog.dialog('option', 'modal', false);
         dialog.dialog('option', 'width', 200 );
         dialog.dialog( 'option', 'position', [200,200]);
         dialog.dialog( 'option', 'closeOnEscape', false );
         dialog.dialog( 'option', 'zIndex', 900 );
         dialog.dialog( 'option', 'resizable', false );
+        dialog.dialog( 'option', 'draggable', false );
         dialog.parent().find('.ui-dialog-titlebar-close').remove();
+        
+        
         var buttons = {};
         buttons[$('#wireit-save').remove().val()] = wireit.submit_workspace;
         dialog.dialog('option', 'buttons', buttons);
+        
         dialog.dialog('close').dialog('open');// fix modal option
+        
         ui_elements.init(dialog);
+        
+        //we should use something else than a dialogbox :S
+        dialog.parent().css({
+           top: 122,
+           left: 380,
+           //height: 411,
+           borderTopRightRadius: 0,
+           borderBottomRightRadius: 0,
+        });
+        
+        $(window).bind('resize', function(){
+           var h = $('#wireit-workspace').height();
+           h -= dialog.parent().find('.ui-dialog-buttonpane').outerHeight(true);
+           h -= dialog.parent().find('.ui-dialog-titlebar').outerHeight(true);
+           
+           dialog.css({
+              height: h
+           });
+           
+        }).trigger('resize');
+        
+        /* the css is used only for this dialogbox... */
+        dialog.parent().find('.ui-dialog-titlebar').css({
+           borderTopRightRadius: 0,
+        });
+        
+        dialog.find('.ui-accordion-header, .ui-accordion-content').css({
+           borderRadius: 0,
+           borderLeft: 'none',
+           borderRight: 'none',
+        });
+        
+        dialog.css({padding: 0});
     },
     
     
@@ -31,6 +70,10 @@ wireit = {
         board.droppable({ accept: '.wireit-rulebox' });
         
         $('.wireit-ruleitem button').each(function(){
+            $(this).css({
+                    background: '#FFF !important'
+            });
+            
             $(this).mousedown(function(event){
                 box = wireit.build_rulebox();
                 wireit.init_rulebox(box, $(event.originalEvent.target).parents('a').find('button').data('metadata'));
