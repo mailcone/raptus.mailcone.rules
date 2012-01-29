@@ -11,11 +11,12 @@ wireit = {
     toolbox: function(){
         var dialog = $('#wireit-toolbox');
         ui_elements._init_dialog(dialog);
-        dialog.dialog('option', 'modal', false );
+        dialog.dialog('option', 'modal', false);
         dialog.dialog('option', 'width', 200 );
-        dialog.dialog( 'option', 'position', [200,200] );
+        dialog.dialog( 'option', 'position', [200,200]);
         dialog.dialog( 'option', 'closeOnEscape', false );
         dialog.dialog( 'option', 'zIndex', 900 );
+        dialog.dialog( 'option', 'resizable', false );
         dialog.parent().find('.ui-dialog-titlebar-close').remove();
         var buttons = {};
         buttons[$('#wireit-save').remove().val()] = wireit.submit_workspace;
@@ -26,13 +27,15 @@ wireit = {
     
     
     toolbox_button: function(){
-        $('#wireit-workspace').droppable({ accept: '.wireit-rulebox' });
+        var board = $('#wireit-workspace');
+        board.droppable({ accept: '.wireit-rulebox' });
+        
         $('.wireit-ruleitem button').each(function(){
             $(this).mousedown(function(event){
                 box = wireit.build_rulebox();
                 wireit.init_rulebox(box, $(event.originalEvent.target).parents('a').find('button').data('metadata'));
-                var left = event.pageX - box.parent().offset().left;
-                var top = event.pageY -box.parent().offset().top;
+                var left = event.pageX - box.parent().offset().left+board.scrollLeft();
+                var top = event.pageY -box.parent().offset().top+board.scrollTop();
                 box.css('left',left);
                 box.css('top', top);
                 box.draggable({ revert: function(event){
@@ -302,20 +305,27 @@ wireit = {
     
     yui_patch: function(){
         // monkey-patch >:-)
+        var board = $('#wireit-workspace');
+        
+        
+        var marginLeft = 15;
+        var marginTop = 15;
+        
         var old_function = WireIt.Terminal.prototype.getXY;
         var new_function = function(){
             box = $(this.el).parent().position();
             ter = $(this.el).position();
-            return [box.left + ter.left + 15,box.top + ter.top + 15];
+            
+            return [box.left + ter.left + 15 + board.scrollLeft(), box.top + ter.top + 15 + board.scrollTop()];
         }
         WireIt.Terminal.prototype.getXY = new_function;
         
         var old_function = WireIt.TerminalProxy.prototype.startDrag;
         var new_function = function(){
             re = old_function.call(this);
-            this.fakeTerminal.getXY = function() { 
-                var org = $('#wireit-workspace').offset()
-                return [this.pos[0]-org.left + 15, this.pos[1]-org.top + 15];
+            this.fakeTerminal.getXY = function() {
+                var org = board.offset();
+                return [this.pos[0]-org.left/* + 15*/ + board.scrollLeft(), this.pos[1]-org.top/* + 15*/ + board.scrollTop()];
             }
             return re;
         }
