@@ -32,6 +32,23 @@ RELATIONS_ANNOTATIONS_KEY = 'raptus.mailcone.rules.relations'
 
 
 
+
+
+def process(func):
+    """ decorator to be set on every process method
+    """
+    def pre(self, charter):
+        self.set_customer(charter.customer)
+        try:
+            func(self, charter)
+        except e:
+            self.reset_customer()
+            raise e
+        self.reset_customer()
+    return pre
+
+
+
 class Ruleset(bases.Container):
     grok.implements(interfaces.IRuleset)
     
@@ -72,6 +89,27 @@ class BaseRuleItem(grok.Model):
     position = PersistentDict()
     overrides = PersistentDict()
     identifer = PersistentDict()
+    
+    _v_customer = None
+    
+    def __getattribute__(self, attr):
+        """ proxy to get the overrides of a customer. to set the
+            right customer use the decorator process.
+        """
+        g = grok.Model.__getattribute__
+        customer = g(self, '_v_customer')
+        if customer is None:
+            return grok.Model.__getattribute__(self, attr)
+        if g(self, 'overrides').get(attr, False):
+            rule = utils.parent(self).id
+            return customer.get_ruleset_data(rule).get(attr, None)
+        return g(self, attr)
+    
+    def set_customer(self, customer):
+        self._v_customer = customer
+    
+    def reset_customer(self):
+        self._v_customer = None
     
     @property
     def properties_prefix(self):
@@ -174,7 +212,7 @@ class BaseConditionItem(BaseRuleItem):
         except Exception, e:
             return str(e)
             
-
+    @process
     def process(self, charter):
         
         match = list()

@@ -40,10 +40,14 @@ class IRuleItem(interface.Interface):
     overrides = interface.Attribute('per. dict attribute:boolean store all attributes where can be override by a customer')
     indentifer = interface.Attribute('per. dict store the used factory for this element')
     
-    def process(self, mailcharter):
-        """ process all mails in the given mailcharter
+    def test(self, email, factory):
+        """ test if this rule match
+            and return a string with matching information for display
         """
-
+        
+    def process(self, charter):
+        """ process this rule and call the next process on a rule
+        """
 
 
 class IInputItem(IRuleItem):
@@ -58,15 +62,6 @@ class IConditionItem(IRuleItem):
     
     title = schema.TextLine(title=_('Title'), required=True, description=_('title of the condition rule'),)
     description = schema.Text(title=u'Description', required=False, description=_('description of the condition rule'),)
-    
-    def test(self, email, factory):
-        """ test if this rule match
-            and return a string with matching information for display
-        """
-        
-    def process(self, charter):
-        """ process this rule and call the next process on a rule
-        """
 
 
 
@@ -76,15 +71,6 @@ class IActionItem(IRuleItem):
     
     title = schema.TextLine(title=_(u'Title'), required=True, description=_('title of the action item'),)
     description = schema.Text(title=u'Description', required=False, description=_('description of the action item'),)
-
-    def test(self, email, factory):
-        """ test if this rule match
-            and return a string with matching information for display
-        """
-        
-    def process(self, charter):
-        """ process this rule and call the next process on a rule
-        """
 
 
 

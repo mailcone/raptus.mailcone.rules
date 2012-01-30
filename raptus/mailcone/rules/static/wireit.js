@@ -70,10 +70,9 @@ wireit = {
         board.droppable({ accept: '.wireit-rulebox' });
         
         $('.wireit-ruleitem button').each(function(){
-            $(this).css({
-                    background: '#FFF !important'
+            $(this).click(function(){
+                $('.wireit-rulebox.skeleton.ui-draggable').remove();
             });
-            
             $(this).mousedown(function(event){
                 box = wireit.build_rulebox();
                 wireit.init_rulebox(box, $(event.originalEvent.target).parents('a').find('button').data('metadata'));
