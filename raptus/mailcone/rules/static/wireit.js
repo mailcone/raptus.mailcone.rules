@@ -70,6 +70,7 @@ wireit = {
         board.droppable({ accept: '.wireit-rulebox' });
         
         $('.wireit-ruleitem button').each(function(){
+            $(this).css({background: '#FFF !important'});
             $(this).click(function(){
                 $('.wireit-rulebox.skeleton.ui-draggable').remove();
             });
@@ -185,7 +186,7 @@ wireit = {
           var dialog = $('#ui-modal-content');
           var mail = $(this).attr('href').match(/\?mail=(.*)$/)[1];
           var box = $(wireit.lastbuttonevent.target).parents('.wireit-rulebox');
-          var di = {ruleitem_to_verify: box.data('metadata').id,
+          var di = {ruleitem_to_verify: box.attr('id'),
                     mail_to_verify: mail,
                     ruleitems:[],
                     relations:[]};
