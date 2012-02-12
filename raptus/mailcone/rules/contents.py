@@ -41,7 +41,7 @@ def process(func):
         self.set_customer(charter.customer)
         try:
             func(self, charter)
-        except e:
+        except Exception, e:
             self.reset_customer()
             raise e
         self.reset_customer()
@@ -99,7 +99,7 @@ class BaseRuleItem(grok.Model):
         g = grok.Model.__getattribute__
         customer = g(self, '_v_customer')
         if customer is None:
-            return grok.Model.__getattribute__(self, attr)
+            return g(self, attr)
         if g(self, 'overrides').get(attr, False):
             rule = utils.parent(self).id
             return customer.get_ruleset_data(rule).get(attr, None)
