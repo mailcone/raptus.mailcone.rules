@@ -5,6 +5,8 @@ from zope import component
 from datetime import datetime
 
 from raptus.mailcone.mails.contents import Mail
+from raptus.mailcone.persistentlog.logger import PersistentLogHandler
+from raptus.mailcone.persistentlog.interfaces import ILogContainerLocator
 from raptus.mailcone.rules import interfaces
 
 
@@ -12,6 +14,10 @@ from raptus.mailcone.rules import interfaces
 
 
 logger = logging.getLogger('raptus.mailcone.rules')
+handler = PersistentLogHandler(u'cronjob', ILogContainerLocator)
+handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+handler.setLevel(0)
+logger.addHandler(handler)
 
 def process():
     logger.info('starting rule process')
@@ -22,6 +28,7 @@ def process():
                 input.process(charter.copy())
     #charter.markAsProcessed()
     logger.info('%s mails marked as processed' % len(charter.mails))
+    handler.persist()
     
 
 
