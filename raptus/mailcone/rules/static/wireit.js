@@ -116,6 +116,8 @@ wireit = {
     
     
     submit_workspace: function(){
+        $('#wireit-workspace').scrollTop(0).scrollLeft(0);
+        
         var di = {ruleitems:[],
                   relations:[]};
         $('.wireit-rulebox:not(#wireit-rulebox-template)').each(function(){
@@ -310,7 +312,7 @@ wireit = {
         $.each(data.input, function(index, term){
             var li = $(box.find('.boxtop li')[index]);
             var x = li.position().left + li.width()/2 - 3; // terminal width correction
-            var settings = {offsetPosition: [x,-22]};
+            var settings = {offsetPosition: [x,-22], nMaxWires:Infinity};
             var terminal = new WireIt.util.TerminalInput(block, $.extend(settings, term.data));
             terminal.id = term.id; // patch id on object
             terminals.push(terminal);
