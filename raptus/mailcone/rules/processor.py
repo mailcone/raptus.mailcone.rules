@@ -21,13 +21,16 @@ logger.addHandler(handler)
 
 def process():
     logger.info('starting rule process')
-    charter = MailCharter()
-    for container in component.getUtility(interfaces.IRulesetContainerLocator)().objects():
-        for input in container.objects():
-            if interfaces.IInputItem.providedBy(input):
-                input.process(charter.copy())
-    #charter.markAsProcessed()
-    logger.info('%s mails marked as processed' % len(charter.mails))
+    try:
+        charter = MailCharter()
+        for container in component.getUtility(interfaces.IRulesetContainerLocator)().objects():
+            for input in container.objects():
+                if interfaces.IInputItem.providedBy(input):
+                    input.process(charter.copy())
+        #charter.markAsProcessed()
+        logger.info('%s mails marked as processed' % len(charter.mails))
+    except Exception, e:
+        logger.error(str(e))
     handler.persist()
     
 
