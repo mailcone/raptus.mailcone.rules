@@ -24,9 +24,13 @@ def process():
     try:
         charter = MailCharter()
         for container in component.getUtility(interfaces.IRulesetContainerLocator)().objects():
-            for input in container.objects():
-                if interfaces.IInputItem.providedBy(input):
-                    input.process(charter.copy())
+            try:
+                for input in container.objects():
+                    if interfaces.IInputItem.providedBy(input):
+                        input.process(charter.copy())
+            except Exception, e:
+                logger.error('Error in rule: %s' % container.name)
+                logger.error(str(e))
         #charter.markAsProcessed()
         logger.info('%s mails marked as processed' % len(charter.mails))
     except Exception, e:
