@@ -240,6 +240,16 @@ class BaseActionItem(BaseRuleItem):
     title = u''
     description = u''
     
+    def get_message(self, mail, attr='message'):
+        """ helper method for formatting messages with propose widget.
+        """
+        replacements = dict()
+        message = getattr(self, attr)
+        for key in message.keys(self):
+            if hasattr(mail, key):
+                replacements[key] = getattr(mail, key, '???')
+        return message.encode(self, replacements)
+
 
 
 class InputItem(BaseInputItem):
