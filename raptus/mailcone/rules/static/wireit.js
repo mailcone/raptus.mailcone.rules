@@ -199,7 +199,7 @@ wireit = {
           });
           $.each(di.ruleitems, function(index, item){
               if (item.id == box.attr('id')){
-                  item['properties'] = ui_elements._data_crapper(dialog);
+                  item['properties'] = ui_elements._data_collector(dialog);
               }
           });
           var data = JSON.stringify(di);
@@ -216,7 +216,7 @@ wireit = {
         var dialog = $('#ui-modal-content');
         var box = $(wireit.lastbuttonevent.target).parents('.wireit-rulebox');
         var data = box.data('metadata');
-        var di = ui_elements._data_crapper(dialog);
+        var di = ui_elements._data_collector(dialog);
         data['properties'] = di;
         wireit.update_rulebox(box);
         dialog.dialog('close');

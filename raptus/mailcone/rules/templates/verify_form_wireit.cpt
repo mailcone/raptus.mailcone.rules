@@ -1,6 +1,5 @@
-<div class="ui-splitter"
-     i18n:domain="raptus.mailcone.mails">
-    <div class="primar-view">
+<div i18n:domain="raptus.mailcone.mails">
+    <div class="datable-widget-view">
       <div tal:replace="structure view.mailstable" />
     </div>
     <div id="ui-console" class="ui-console" i18n:translate="">
