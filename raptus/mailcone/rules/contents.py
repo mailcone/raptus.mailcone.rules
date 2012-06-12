@@ -270,9 +270,10 @@ class InputCustomerItem(BaseInputItem):
     def process(self, charter):
         for rel in self._relations('mailoutput'):
             for customer in component.getUtility(ICustomersContainerLocator)().objects():
-                copy = charter.copy()
-                copy.customer = customer
-                rel.peer(self).process(copy)
+                if self.__parent__.id in customer.rulesets:
+                    copy = charter.copy()
+                    copy.customer = customer
+                    rel.peer(self).process(copy)
 
 
 

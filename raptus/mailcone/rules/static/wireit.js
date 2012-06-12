@@ -121,9 +121,9 @@ wireit = {
         var di = {ruleitems:[],
                   relations:[]};
         $('.wireit-rulebox:not(#wireit-rulebox-template)').each(function(){
-            wireit.data_crapper($(this));
+            wireit.data_crawler($(this));
             di.ruleitems.push($(this).data('metadata'));
-            $.merge(di.relations, wireit.relation_crapper($(this)));
+            $.merge(di.relations, wireit.relation_crawler($(this)));
         });
         var form = $('body').append('<form method="post">'+
                      '<input type="hidden" name="metadata" value=""/>'+
@@ -147,14 +147,14 @@ wireit = {
     },
     
     
-    data_crapper: function(box){
+    data_crawler: function(box){
         var data = box.data('metadata');
         data['id'] = box.attr('id');
         data['position'] = box.position();
     },
     
     
-    relation_crapper: function(box){
+    relation_crawler: function(box){
         list = [];
         $.each(box.data('terminals'), function(index, terminal){
             $.each(terminal.wires, function(index, wire){
@@ -193,9 +193,9 @@ wireit = {
                     ruleitems:[],
                     relations:[]};
           $('.wireit-rulebox:not(#wireit-rulebox-template)').each(function(){
-              wireit.data_crapper($(this));
+              wireit.data_crawler($(this));
               di.ruleitems.push($.extend({},$(this).data('metadata')));
-              $.merge(di.relations, wireit.relation_crapper($(this)));
+              $.merge(di.relations, wireit.relation_crawler($(this)));
           });
           $.each(di.ruleitems, function(index, item){
               if (item.id == box.attr('id')){
@@ -266,7 +266,10 @@ wireit = {
     
     update_rulebox: function(box){
         var data = box.data('metadata');
-        box.find('.boxtitle').html(data.properties['properties.title']+' <em>('+data.title+')</em>');
+        if (data.properties['properties.title'])
+            box.find('.boxtitle').html(data.properties['properties.title']+' <em>('+data.title+')</em>');
+        else
+            box.find('.boxtitle').html('<em>'+data.title+'</em>');
         box.find('.boxdescription').html(data.properties['properties.description']);
     },
     
