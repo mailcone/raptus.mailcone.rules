@@ -274,7 +274,7 @@ class RuleBoxEditForm(ReStructuredMixing, IdentifierMixing, AddForm):
                        title=_('Test'),
                        html=self.verifyhtml()))
         li.append(dict(id='ui-tabs-info',
-                       title=_('Info'),
+                       title=_('RTFM'),
                        html=self.infohtml()))
         return [i for i in li if not  i.get('id') in ignors]
     

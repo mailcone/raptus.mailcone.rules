@@ -132,7 +132,7 @@ class InputFactory(BaseFactory):
     
     
     title = _('Input')
-    description = _('All mails came through the Input Element')
+    description = _('All mails came through the Input Element. Use this for general rules.')
     ruleitem_class = contents.InputItem
 
 
@@ -156,6 +156,6 @@ class InputCustomerFactory(InputFactory):
     
     
     title = _('Input Customer')
-    description = _('All mails for each customer came in through the Input Element')
+    description = _('All mails for each customer came in through the Input Element. Use this for rule with override values from a customer.')
     ruleitem_class = contents.InputCustomerItem
 
