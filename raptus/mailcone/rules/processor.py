@@ -31,7 +31,7 @@ def process():
             except Exception, e:
                 logger.error('Error in rule: %s' % container.name)
                 logger.error(str(e))
-        #charter.markAsProcessed()
+        charter.markAsProcessed()
         logger.info('%s mails marked as processed' % len(charter.mails))
     except Exception, e:
         logger.error(str(e))
