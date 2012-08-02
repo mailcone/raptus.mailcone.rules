@@ -69,8 +69,17 @@ class Ruleset(bases.Container):
         self[str(obj.id)] = obj
         return obj.id
 
+
+
 class RulesetContainer(bases.Container):
     grok.implements(interfaces.IRulesetContainer)
+
+    def get_ruleitems(self):
+        """ return all ruleitems in all rulesets
+        """
+        for ruleset in self.objects():
+            for item in ruleset.objects():
+                yield item
 
 @grok.subscribe(IMailcone, grok.IApplicationInitializedEvent)
 def init_rulesets_container(obj, event):
@@ -101,8 +110,7 @@ class BaseRuleItem(grok.Model):
         if customer is None:
             return g(self, attr)
         if g(self, 'overrides').get(attr, False):
-            rule = utils.parent(self).id
-            return customer.get_ruleset_data(rule).get(attr, None)
+            return customer.get_ruleset_data(self.id, False).get(attr, None)
         return g(self, attr)
     
     def set_customer(self, customer):
