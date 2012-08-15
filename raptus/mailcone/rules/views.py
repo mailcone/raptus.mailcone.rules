@@ -50,7 +50,7 @@ class Rulesets(Page):
 
 class AddRulesetForm(AddForm):
     grok.context(interfaces.IRulesetContainer)
-    grok.require('zope.Public')
+    grok.require('zope.View')
     form_fields = grok.AutoFields(interfaces.IRuleset).omit('id')
     label = _('Add a new ruleset')
 
@@ -60,14 +60,14 @@ class AddRulesetForm(AddForm):
 
 class EditRulesetForm(EditForm):
     grok.context(interfaces.IRuleset)
-    grok.require('zope.Public')
+    grok.require('zope.View')
     form_fields = grok.AutoFields(interfaces.IRuleset).omit('id')
     label = _('Edit ruleset')
 
 
 class DeleteRulesetForm(DeleteForm):
     grok.context(interfaces.IRuleset)
-    grok.require('zope.Public')
+    grok.require('zope.View')
     
     def item_title(self):
         return self.context.name
@@ -76,7 +76,7 @@ class DeleteRulesetForm(DeleteForm):
 class DisplayFormRuleset(DisplayForm):
     grok.name('index')
     grok.context(interfaces.IRuleset)
-    grok.require('zope.Public')
+    grok.require('zope.View')
 
 
 
