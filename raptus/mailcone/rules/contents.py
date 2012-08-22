@@ -207,11 +207,18 @@ class BaseConditionItem(BaseRuleItem):
     title = u''
     description = u''
 
+    def before_check(self):
+        """ this function is called one time
+            before processing mails.
+            subclass it if you need it.
+        """
+
     def check(self, mail):
         NotImplementedError('you need to override check method in your subclass!')
     
     def test(self, mail, factory):
         try:
+            self.before_check()
             mapping = dict(factory=factory.title, title=self.title)
             if self.check(mail):
                 return self.translate(_("Rule for <${factory}@${title}> match", mapping=mapping))
@@ -219,9 +226,11 @@ class BaseConditionItem(BaseRuleItem):
                 return self.translate(_("Rule for <${factory}@${title}> dosen't match", mapping=mapping))
         except Exception, e:
             return str(e)
-            
+    
     @process
     def process(self, charter):
+        
+        self.before_check()
         
         match = list()
         notmatch = list()
