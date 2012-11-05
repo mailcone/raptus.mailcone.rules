@@ -14,7 +14,7 @@ from raptus.mailcone.rules import interfaces
 
 
 logger = logging.getLogger('raptus.mailcone.rules')
-handler = PersistentLogHandler(u'cronjob', ILogContainerLocator)
+handler = PersistentLogHandler(u'cronjob: rules processing', ILogContainerLocator)
 handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
 handler.setLevel(0)
 logger.addHandler(handler)
