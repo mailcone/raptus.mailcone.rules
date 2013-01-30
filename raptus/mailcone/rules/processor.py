@@ -2,12 +2,14 @@ import logging
 from megrok import rdb
 
 from zope import component
+from zope.event import notify
 from datetime import datetime
 
+from raptus.mailcone.rules import events
+from raptus.mailcone.rules import interfaces
 from raptus.mailcone.mails.contents import Mail
 from raptus.mailcone.persistentlog.logger import PersistentLogHandler
 from raptus.mailcone.persistentlog.interfaces import ILogContainerLocator
-from raptus.mailcone.rules import interfaces
 
 
 
@@ -23,17 +25,23 @@ def process():
     logger.info('starting rule process')
     try:
         charter = MailCharter()
+        notify(events.BeginRuleProcessingEvent(charter))
         for container in component.getUtility(interfaces.IRulesetContainerLocator)().objects():
             try:
+                notify(events.BeginProcessingRulesetEvent(charter, container))
                 for input in container.objects():
                     if interfaces.IInputItem.providedBy(input):
                         input.process(charter.copy())
+                notify(events.EndProcessingRulesetEvent(charter, container))
             except Exception, e:
+                notify(events.RulesetProcessingErrorEvent(e, charter, container))
                 logger.error('Error in rule: %s' % container.name)
                 logger.error(str(e))
+        notify(events.EndRuleProcessingEvent(charter))
         charter.markAsProcessed()
         logger.info('%s mails marked as processed' % len(charter.mails))
     except Exception, e:
+        notify(events.RuleProcessingErrorEvent(e, charter))
         logger.error(str(e))
     handler.persist()
     

@@ -1,5 +1,6 @@
+from zope import schema
 from zope import interface
-from zope import interface, schema
+from zope import component
 
 from raptus.mailcone.core.interfaces import IContainer
 from raptus.mailcone.core.interfaces import IContainerLocator
@@ -113,4 +114,56 @@ class IConditionItemFactory(IRuleItemFactory):
 class IActionItemFactory(IRuleItemFactory):
     """ adapter to build a IActionItem
     """
+
+
+
+class IBaseRuleProcessingEvent(interface.Interface):
+    charter = interface.Attribute('charter object where hold all emails')
+
+
+
+class IBaseRulesetProcessingEvent(IBaseRuleProcessingEvent):
+    ruleset = interface.Attribute('ruleset object where is processing')
+
+
+
+class IBeginRuleProcessingEvent(IBaseRuleProcessingEvent):
+    """ send begin event before rules are processed
+    """
+
+
+
+class IEndRuleProcessingEvent(IBaseRuleProcessingEvent):
+    """ send end event after processing rules
+    """
+
+
+
+class IRuleProcessingErrorEvent(IBaseRuleProcessingEvent):
+    """ send error event while rules processing need to be aborted
+    """
+    exception = interface.Attribute('causer exception')
+
+
+
+class IBeginRulesetProcessingEvent(IBaseRulesetProcessingEvent):
+    """ send begin event before a ruleset are processed
+    """
+
+
+
+class IEndRulesetProcessingEvent(IBaseRulesetProcessingEvent):
+    """ send end event after a ruleset are processed
+    """
+
+
+
+class IRulesetProcessingErrorEvent(IBaseRulesetProcessingEvent):
+    """ send error event while a ruleset is aborted
+    """
+    exception = interface.Attribute('causer exception')
+
+
+
+
 
